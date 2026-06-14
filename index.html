@@ -271,7 +271,7 @@
     <img src="logo.png" alt="HeadSync Logo" />
   </div>
   <div class="splash-title">HEADSYNC</div>
-  <div class="splash-sub">PHIÊN BẢN HACKER</div>
+  <div class="splash-sub">ADVANCED OPTIMIZER v1.0</div>
   <div class="loader"><div class="loader-bar"></div></div>
 </div>
 
@@ -301,11 +301,11 @@
       <img src="logo.png" alt="HeadSync Logo" />
     </div>
     <h1>HEADSYNC</h1>
-    <div class="header-sub">Hệ Thống Tối Ưu & Can Thiệp Chuyên Sâu</div>
+    <div class="header-sub">Hệ Thống Tối Ưu Hiệu Năng Chuyên Sâu</div>
   </header>
 
   <div class="device-scanner">
-    <div class="scanner-header"><span class="blink-dot"></span> ĐANG QUÉT HỆ THỐNG...</div>
+    <div class="scanner-header"><span class="blink-dot"></span> SYSTEM SCAN IN PROGRESS...</div>
     <div class="scanner-info">
       <div class="scan-row"><span>Thiết bị:</span> <span class="scan-val" id="dev-name">Đang phân tích...</span></div>
       <div class="scan-row"><span>Hệ điều hành:</span> <span class="scan-val" id="dev-os">Đang phân tích...</span></div>
@@ -395,7 +395,7 @@
   </div>
 
   <button class="boost-btn" id="btn-execute" onclick="startBoost()">
-    > KÍCH HOẠT HỆ THỐNG
+    > APPLY OPTIMIZATION
   </button>
 
   <footer style="text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;">
@@ -408,8 +408,8 @@
 <div id="progress-modal">
   <div class="terminal-box">
     <div class="terminal-header">
-      <span>root@system:~/exploit</span>
-      <span id="term-status">ĐANG CHẠY</span>
+      <span>root@headsync:~/optimizer</span>
+      <span id="term-status">RUNNING</span>
     </div>
     <div class="terminal-body" id="term-log">
       <!-- Logs will appear here -->
@@ -611,30 +611,30 @@
 
   // TERMINAL LOGIC
   const terminalLogs = [
-    "root@system:~# ./start_inject.sh",
-    "[+] Đã nhận diện mục tiêu: {GAME_NAME}",
-    "[+] Đang vượt rào bảo mật Anti-Cheat...",
-    "    -> Đánh lừa chữ ký thành công.",
-    "[+] Đang phân bổ bộ nhớ đệm động...",
-    "    -> Giải phóng RAM: 450MB.",
-    "    -> Kích thước Buffer: 2048KB.",
-    "[!] Đang can thiệp mã lệnh hiệu chỉnh cảm ứng...",
-    "    -> Độ trễ cảm ứng giảm xuống 0ms.",
-    "[!] Đang áp dụng thuật toán Giảm giật vũ khí...",
-    "    -> Đã thay đổi thông số độ giật.",
-    "[+] Đang ghi đè Registry hệ thống mạng...",
-    "    -> Chuyển hướng DNS sang máy chủ ẩn danh.",
-    "    -> Cố định Ping ở mức 12ms.",
-    "root@system:~# status check",
-    "[OK] Đã tải và kích hoạt toàn bộ tính năng.",
-    "Hệ thống đã sẵn sàng."
+    "root@headsync:~# ./optimizer.sh",
+    "[+] Target identified: {GAME_NAME}",
+    "[+] Bypassing security layer...",
+    "    -> Auth signature neutralized.",
+    "[+] Allocating memory buffers...",
+    "    -> RAM freed: 450MB.",
+    "    -> Buffer pool: 2048KB ready.",
+    "[!] Injecting touch precision module...",
+    "    -> Input latency set to 0ms.",
+    "[!] Applying recoil correction algorithm...",
+    "    -> Recoil coefficients overridden.",
+    "[+] Patching network stack...",
+    "    -> DNS rerouted via private relay.",
+    "    -> Ping stabilized at 12ms.",
+    "root@headsync:~# verify --all",
+    "[OK] All modules loaded & active.",
+    "Optimization complete. Enjoy your game."
   ];
 
   function startBoost() {
     initAudio(); playBeep(500, 'sawtooth', 0.2, 0.1);
     const btn = document.getElementById('btn-execute');
     btn.classList.add('active');
-    btn.textContent = '> ĐANG CHẠY...';
+    btn.textContent = '> PROCESSING...';
 
     const modal = document.getElementById('progress-modal');
     const termLog = document.getElementById('term-log');
@@ -665,15 +665,15 @@
         clearInterval(interval);
         playBeep(1500, 'sine', 0.1, 0.1);
         playBeep(2000, 'sine', 0.2, 0.1); // Success sound
-        document.getElementById('term-status').textContent = 'HOÀN TẤT';
+        document.getElementById('term-status').textContent = 'DONE';
         document.getElementById('term-status').style.color = 'var(--term-green)';
         
         setTimeout(() => {
           modal.classList.remove('show');
           btn.classList.remove('active');
-          btn.textContent = '> KÍCH HOẠT HỆ THỐNG';
-          showToast('CAN THIỆP HỆ THỐNG THÀNH CÔNG!');
-          document.getElementById('term-status').textContent = 'ĐANG CHẠY';
+          btn.textContent = '> APPLY OPTIMIZATION';
+          showToast('TỐI ƯU ĐÃ ÁP DỤNG THÀNH CÔNG!');
+          document.getElementById('term-status').textContent = 'RUNNING';
           document.getElementById('term-status').style.color = 'var(--text-muted)';
         }, 1500);
       }
