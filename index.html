@@ -9,6 +9,7 @@
   <title>HeadSync</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
   <style>
     :root {
       --bg-dark: #070709;
@@ -300,7 +301,7 @@
       <img src="logo.png" alt="HeadSync Logo" />
     </div>
     <h1>HEADSYNC</h1>
-    <div class="header-sub">Advanced Exploits & Optimizer · cre: vanthanh</div>
+    <div class="header-sub">Advanced Exploits & Optimizer</div>
   </header>
 
   <div class="device-scanner">
@@ -397,7 +398,7 @@
   </button>
 
   <footer style="text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;">
-    HEADSYNC &copy; 2025 vanthanh<br/>
+    HEADSYNC &copy; 2025<br/>
     UNAUTHORIZED DISTRIBUTION IS PROHIBITED
   </footer>
 </div>
@@ -445,7 +446,14 @@
     osc.stop(audioCtx.currentTime + duration);
   }
 
-  const VALID_KEY = "1234";
+  // CẤU HÌNH SUPABASE & HWID
+  const SUPABASE_URL = "https://rorciwilwxzqakdflkes.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_bpEASGGGcJa74DKjzH27Ig_ipM9HEhB";
+  const HEADERS = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+
+  let HWID = "UNKNOWN_DEVICE";
+  FingerprintJS.load().then(fp => fp.get()).then(result => { HWID = result.visitorId; });
+
   const states = { boost: true, aim: true, vibrate: true, reg: true };
   let selectedGame = 'normal';
 
@@ -459,31 +467,63 @@
   }, 2500);
 
   function handleKeypress(event) {
-    initAudio(); // Initialize audio on user interaction
-    playBeep(1000, 'square', 0.02, 0.02); // Keypress sound
+    initAudio();
+    playBeep(1000, 'square', 0.02, 0.02);
     if (event.key === "Enter") checkKey();
   }
 
-  function checkKey() {
+  async function checkKey() {
     initAudio();
     const input = document.getElementById('key-input');
-    if (input.value === VALID_KEY) {
+    const inputKey = input.value.trim();
+    if(!inputKey) return;
+
+    const btn = input.nextElementSibling;
+    const oldText = btn.textContent;
+    btn.textContent = "VERIFYING...";
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}&select=*`, { headers: HEADERS });
+      const data = await res.json();
+
+      if(data.length === 0) throw new Error("Mã Key không tồn tại!");
+      const keyData = data[0];
+
+      if(!keyData.is_active) throw new Error("Key đã bị khóa bởi Admin!");
+
+      if(keyData.hwid) {
+        if(keyData.hwid !== HWID) throw new Error("Key đang dùng trên thiết bị khác!");
+        if(keyData.expires_at && Date.now() > new Date(keyData.expires_at).getTime()) {
+          throw new Error("Key của bạn đã hết hạn!");
+        }
+      } else {
+        // Lần đầu gán HWID
+        const durationMs = keyData.duration_days * 24 * 60 * 60 * 1000;
+        const expiresAt = new Date(Date.now() + durationMs).toISOString();
+        await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
+          method: "PATCH",
+          headers: HEADERS,
+          body: JSON.stringify({ hwid: HWID, expires_at: expiresAt })
+        });
+      }
+
       playBeep(1200, 'sine', 0.1, 0.1);
-      playBeep(1600, 'sine', 0.15, 0.1); // Success double beep
-      
+      playBeep(1600, 'sine', 0.15, 0.1);
       document.getElementById('login-screen').classList.remove('show');
       showToast('ACCESS GRANTED!');
-      
       setTimeout(() => {
         document.getElementById('app').classList.add('show');
         initDeviceScanner();
         initStats();
       }, 500);
-    } else {
-      playBeep(300, 'sawtooth', 0.3, 0.1); // Error buzz
+
+    } catch (err) {
+      playBeep(300, 'sawtooth', 0.3, 0.1);
       input.classList.add('error');
-      showToast('ACCESS DENIED!');
-      setTimeout(() => input.classList.remove('error'), 400);
+      showToast(err.message || 'Lỗi hệ thống!');
+      setTimeout(() => input.classList.remove('error'), 800);
+    } finally {
+      btn.textContent = oldText;
     }
   }
 
