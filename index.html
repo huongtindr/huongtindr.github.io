@@ -491,20 +491,34 @@
 
       if(!keyData.is_active) throw new Error("Key đã bị khóa bởi Admin!");
 
-      if(keyData.hwid) {
-        if(keyData.hwid !== HWID) throw new Error("Key đang dùng trên thiết bị khác!");
-        if(keyData.expires_at && Date.now() > new Date(keyData.expires_at).getTime()) {
-          throw new Error("Key của bạn đã hết hạn!");
-        }
+      let registered = keyData.registered_hwids || [];
+      
+      if(registered.includes(HWID)) {
+          // Máy này đã nằm trong danh sách
+          if(keyData.expires_at && Date.now() > new Date(keyData.expires_at).getTime()) {
+              throw new Error("Key của bạn đã hết hạn!");
+          }
       } else {
-        // Lần đầu gán HWID
-        const durationMs = keyData.duration_days * 24 * 60 * 60 * 1000;
-        const expiresAt = new Date(Date.now() + durationMs).toISOString();
-        await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
-          method: "PATCH",
-          headers: HEADERS,
-          body: JSON.stringify({ hwid: HWID, expires_at: expiresAt })
-        });
+          // Máy này chưa nằm trong danh sách, kiểm tra slot trống
+          if(registered.length >= keyData.max_devices) {
+              throw new Error(`Key này đã đạt giới hạn thiết bị tối đa (${keyData.max_devices} máy)!`);
+          }
+          
+          // Thêm máy mới vào danh sách
+          registered.push(HWID);
+          let updateData = { registered_hwids: registered };
+          
+          // Nếu đây là người dùng đầu tiên (kích hoạt key), bắt đầu đếm ngược thời gian
+          if(registered.length === 1) {
+              const durationMs = keyData.duration_days * 24 * 60 * 60 * 1000;
+              updateData.expires_at = new Date(Date.now() + durationMs).toISOString();
+          }
+
+          await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
+            method: "PATCH",
+            headers: HEADERS,
+            body: JSON.stringify(updateData)
+          });
       }
 
       playBeep(1200, 'sine', 0.1, 0.1);
