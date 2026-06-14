@@ -271,7 +271,7 @@
     <img src="logo.png" alt="HeadSync Logo" />
   </div>
   <div class="splash-title">HEADSYNC</div>
-  <div class="splash-sub">HACKER EDITION</div>
+  <div class="splash-sub">PHIÊN BẢN HACKER</div>
   <div class="loader"><div class="loader-bar"></div></div>
 </div>
 
@@ -284,11 +284,11 @@
         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
       </svg>
     </div>
-    <div style="font-family:'Orbitron', sans-serif; font-size: 16px; color:#fff; margin-bottom: 5px;">SECURITY GATEWAY</div>
+    <div style="font-family:'Orbitron', sans-serif; font-size: 16px; color:#fff; margin-bottom: 5px;">CỔNG BẢO MẬT</div>
     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px;">Yêu cầu mã khoá cấp quyền truy cập</div>
-    <input type="password" id="key-input" placeholder="ENTER KEY" onkeypress="handleKeypress(event)" />
+    <input type="password" id="key-input" placeholder="NHẬP MÃ KEY" onkeypress="handleKeypress(event)" />
     <button class="boost-btn" style="margin:0; width:100%" onclick="checkKey()">
-      AUTHORIZE
+      XÁC NHẬN
     </button>
   </div>
 </div>
@@ -301,15 +301,16 @@
       <img src="logo.png" alt="HeadSync Logo" />
     </div>
     <h1>HEADSYNC</h1>
-    <div class="header-sub">Advanced Exploits & Optimizer</div>
+    <div class="header-sub">Hệ Thống Tối Ưu & Can Thiệp Chuyên Sâu</div>
   </header>
 
   <div class="device-scanner">
     <div class="scanner-header"><span class="blink-dot"></span> ĐANG QUÉT HỆ THỐNG...</div>
     <div class="scanner-info">
-      <div class="scan-row"><span>Thiết bị:</span> <span class="scan-val" id="dev-name">Analyzing...</span></div>
-      <div class="scan-row"><span>Hệ điều hành:</span> <span class="scan-val" id="dev-os">Analyzing...</span></div>
-      <div class="scan-row"><span>Network IP:</span> <span class="scan-val" id="dev-ip">Analyzing...</span></div>
+      <div class="scan-row"><span>Thiết bị:</span> <span class="scan-val" id="dev-name">Đang phân tích...</span></div>
+      <div class="scan-row"><span>Hệ điều hành:</span> <span class="scan-val" id="dev-os">Đang phân tích...</span></div>
+      <div class="scan-row"><span>Mạng IP:</span> <span class="scan-val" id="dev-ip">Đang phân tích...</span></div>
+      <div class="scan-row" id="key-expiry-row" style="display:none; color: var(--accent);"><span>Hạn Key:</span> <span class="scan-val" id="key-expiry-val"></span></div>
     </div>
   </div>
 
@@ -331,28 +332,28 @@
   </div>
 
   <div class="section">
-    <div class="section-title">Target Game</div>
+    <div class="section-title">Chọn Game Mục Tiêu</div>
     <div class="game-selection">
       <div class="game-option active" id="game-ff-normal" onclick="selectGame('normal')">
         <div class="game-icon">FF</div>
-        <div class="game-name">Free Fire<br/>Standard</div>
+        <div class="game-name">Free Fire<br/>Bản Thường</div>
       </div>
       <div class="game-option" id="game-ff-max" onclick="selectGame('max')">
         <div class="game-icon max">MAX</div>
-        <div class="game-name">Free Fire<br/>MAX Edit</div>
+        <div class="game-name">Free Fire<br/>Bản MAX</div>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">Core Modules</div>
+    <div class="section-title">Tính Năng Cốt Lõi</div>
     <div class="cards">
       <div class="card" onclick="toggleFeature('boost')">
         <div class="card-icon-feat">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Memory Injector</div>
+          <div class="card-title">Can Thiệp Bộ Nhớ</div>
           <div class="card-desc">Can thiệp bộ nhớ đệm, tối đa hoá FPS.</div>
         </div>
         <div class="card-action"><div class="toggle on" id="toggle-boost"></div></div>
@@ -363,7 +364,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Touch Calibration</div>
+          <div class="card-title">Hiệu Chỉnh Cảm Ứng</div>
           <div class="card-desc">Loại bỏ độ trễ (delay) cảm ứng tuyệt đối.</div>
         </div>
         <div class="card-action"><div class="toggle on" id="toggle-aim"></div></div>
@@ -374,7 +375,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Recoil Stabilizer</div>
+          <div class="card-title">Giảm Giật Vũ Khí</div>
           <div class="card-desc">Cân bằng gia tốc, giảm giật khung hình 80%.</div>
         </div>
         <div class="card-action"><div class="toggle on" id="toggle-vibrate"></div></div>
@@ -385,7 +386,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Network DNS Bypass</div>
+          <div class="card-title">Vượt Tường Lửa DNS</div>
           <div class="card-desc">Bypass máy chủ Garena, chặn ping ảo.</div>
         </div>
         <div class="card-action"><div class="toggle on" id="toggle-reg"></div></div>
@@ -394,12 +395,12 @@
   </div>
 
   <button class="boost-btn" id="btn-execute" onclick="startBoost()">
-    > EXECUTE SCRIPT
+    > KÍCH HOẠT HỆ THỐNG
   </button>
 
   <footer style="text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;">
     HEADSYNC &copy; 2025<br/>
-    UNAUTHORIZED DISTRIBUTION IS PROHIBITED
+    CẤM SAO CHÉP & PHÂN PHỐI TRÁI PHÉP
   </footer>
 </div>
 
@@ -408,7 +409,7 @@
   <div class="terminal-box">
     <div class="terminal-header">
       <span>root@system:~/exploit</span>
-      <span id="term-status">EXECUTING</span>
+      <span id="term-status">ĐANG CHẠY</span>
     </div>
     <div class="terminal-body" id="term-log">
       <!-- Logs will appear here -->
@@ -480,7 +481,7 @@
 
     const btn = input.nextElementSibling;
     const oldText = btn.textContent;
-    btn.textContent = "VERIFYING...";
+    btn.textContent = "ĐANG XÁC THỰC...";
 
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}&select=*`, { headers: HEADERS });
@@ -519,12 +520,22 @@
             headers: HEADERS,
             body: JSON.stringify(updateData)
           });
+          
+          keyData.expires_at = updateData.expires_at;
       }
 
       playBeep(1200, 'sine', 0.1, 0.1);
       playBeep(1600, 'sine', 0.15, 0.1);
       document.getElementById('login-screen').classList.remove('show');
-      showToast('ACCESS GRANTED!');
+      showToast('XÁC THỰC THÀNH CÔNG!');
+      
+      // Hiển thị hạn Key
+      if(keyData.expires_at) {
+          const expDate = new Date(keyData.expires_at);
+          document.getElementById('key-expiry-row').style.display = "flex";
+          document.getElementById('key-expiry-val').textContent = expDate.toLocaleString('vi-VN');
+      }
+
       setTimeout(() => {
         document.getElementById('app').classList.add('show');
         initDeviceScanner();
@@ -587,7 +598,7 @@
     initAudio(); playBeep(900, 'square', 0.05, 0.03);
     states[key] = !states[key];
     document.getElementById('toggle-' + key).classList.toggle('on', states[key]);
-    showToast(states[key] ? 'Module: ACTIVE' : 'Module: DISABLED');
+    showToast(states[key] ? 'Tính năng: BẬT' : 'Tính năng: TẮT');
   }
 
   function showToast(msg) {
@@ -601,29 +612,29 @@
   // TERMINAL LOGIC
   const terminalLogs = [
     "root@system:~# ./start_inject.sh",
-    "[+] Target located: {GAME_NAME}",
-    "[+] Bypassing Anti-Cheat security...",
-    "    -> Signature spoofed successfully.",
-    "[+] Allocating dynamic memory buffers...",
-    "    -> RAM cleared: 450MB.",
-    "    -> Buffer size: 2048KB.",
-    "[!] Injecting touch calibration script...",
-    "    -> Touch delay reduced to 0ms.",
-    "[!] Applying Recoil Stabilizer algorithms...",
-    "    -> Recoil parameters modified.",
-    "[+] Overwriting Network Registry...",
-    "    -> DNS Re-routed to private nodes.",
-    "    -> Ping locked at 12ms.",
+    "[+] Đã nhận diện mục tiêu: {GAME_NAME}",
+    "[+] Đang vượt rào bảo mật Anti-Cheat...",
+    "    -> Đánh lừa chữ ký thành công.",
+    "[+] Đang phân bổ bộ nhớ đệm động...",
+    "    -> Giải phóng RAM: 450MB.",
+    "    -> Kích thước Buffer: 2048KB.",
+    "[!] Đang can thiệp mã lệnh hiệu chỉnh cảm ứng...",
+    "    -> Độ trễ cảm ứng giảm xuống 0ms.",
+    "[!] Đang áp dụng thuật toán Giảm giật vũ khí...",
+    "    -> Đã thay đổi thông số độ giật.",
+    "[+] Đang ghi đè Registry hệ thống mạng...",
+    "    -> Chuyển hướng DNS sang máy chủ ẩn danh.",
+    "    -> Cố định Ping ở mức 12ms.",
     "root@system:~# status check",
-    "[OK] All modules loaded and active.",
-    "System is ready."
+    "[OK] Đã tải và kích hoạt toàn bộ tính năng.",
+    "Hệ thống đã sẵn sàng."
   ];
 
   function startBoost() {
     initAudio(); playBeep(500, 'sawtooth', 0.2, 0.1);
     const btn = document.getElementById('btn-execute');
     btn.classList.add('active');
-    btn.textContent = '> EXECUTING...';
+    btn.textContent = '> ĐANG CHẠY...';
 
     const modal = document.getElementById('progress-modal');
     const termLog = document.getElementById('term-log');
@@ -654,15 +665,15 @@
         clearInterval(interval);
         playBeep(1500, 'sine', 0.1, 0.1);
         playBeep(2000, 'sine', 0.2, 0.1); // Success sound
-        document.getElementById('term-status').textContent = 'DONE';
+        document.getElementById('term-status').textContent = 'HOÀN TẤT';
         document.getElementById('term-status').style.color = 'var(--term-green)';
         
         setTimeout(() => {
           modal.classList.remove('show');
           btn.classList.remove('active');
-          btn.textContent = '> EXECUTE SCRIPT';
-          showToast('HACK INJECTION SUCCESSFUL!');
-          document.getElementById('term-status').textContent = 'EXECUTING';
+          btn.textContent = '> KÍCH HOẠT HỆ THỐNG';
+          showToast('CAN THIỆP HỆ THỐNG THÀNH CÔNG!');
+          document.getElementById('term-status').textContent = 'ĐANG CHẠY';
           document.getElementById('term-status').style.color = 'var(--text-muted)';
         }, 1500);
       }
