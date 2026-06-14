@@ -435,56 +435,7 @@
     .terminal-progress { height: 3px; background: #111; }
     .terminal-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); width: 0%; box-shadow: 0 0 8px var(--accent); transition: width 0.35s ease; }
 
-    /* ═══════════════════════════════════════
-       INSTALL GUIDE MODAL
-    ═══════════════════════════════════════ */
-    #install-modal {
-      display: none; position: fixed; inset: 0; z-index: 210;
-      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
-      align-items: flex-end; justify-content: center;
-      opacity: 0; transition: opacity 0.3s;
-    }
-    #install-modal.show { display: flex; opacity: 1; }
-    .install-sheet {
-      width: 100%; max-width: 440px; background: #0f0f12;
-      border: 1px solid rgba(16,185,129,0.25); border-radius: 24px 24px 0 0;
-      padding: 28px 24px calc(env(safe-area-inset-bottom) + 28px);
-      animation: sheetUp 0.45s cubic-bezier(0.34,1.56,0.64,1);
-      max-height: 90vh; overflow-y: auto;
-    }
-    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .install-handle { width: 36px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 20px; }
-    .install-header { text-align: center; margin-bottom: 24px; }
-    .install-header h2 { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--success); letter-spacing: 2px; margin-bottom: 6px; }
-    .install-header p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-    .install-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .install-step {
-      display: flex; align-items: flex-start; gap: 14px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px;
-      animation: stepIn 0.4s ease-out both;
-    }
-    .install-step:nth-child(1) { animation-delay: 0.1s; }
-    .install-step:nth-child(2) { animation-delay: 0.2s; }
-    .install-step:nth-child(3) { animation-delay: 0.3s; }
-    .install-step:nth-child(4) { animation-delay: 0.4s; }
-    @keyframes stepIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%; background: rgba(16,185,129,0.15);
-      border: 1px solid rgba(16,185,129,0.4); display: flex; align-items: center; justify-content: center;
-      font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--success); flex-shrink: 0;
-    }
-    .step-emoji { font-size: 18px; flex-shrink: 0; }
-    .step-body { flex: 1; }
-    .step-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 3px; }
-    .step-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-    .step-desc strong { color: var(--text-main); }
-    .install-note {
-      background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
-      border-radius: 10px; padding: 12px 14px; font-size: 11px; color: var(--text-muted);
-      line-height: 1.5; margin-bottom: 20px;
-    }
-    .install-note strong { color: var(--accent); }
+
 
     /* ═══════════════════════════════════════
        TOAST
@@ -788,52 +739,6 @@
   </div>
 </div>
 
-<!-- ── INSTALL GUIDE MODAL ── -->
-<div id="install-modal" onclick="handleInstallOverlayClick(event)">
-  <div class="install-sheet" id="install-sheet">
-    <div class="install-handle"></div>
-    <div class="install-header">
-      <h2>✦ INSTALL PROFILE</h2>
-      <p>Follow these steps to activate<br/>HeadSync on your device</p>
-    </div>
-    <div class="install-steps">
-      <div class="install-step">
-        <span class="step-emoji">⚙️</span>
-        <div class="step-body">
-          <div class="step-title">Open Settings</div>
-          <div class="step-desc">Go to your iPhone <strong>Settings</strong> app. Look for the <strong>"Profile Downloaded"</strong> notification at the top.</div>
-        </div>
-      </div>
-      <div class="install-step">
-        <span class="step-emoji">📋</span>
-        <div class="step-body">
-          <div class="step-title">Tap the Profile</div>
-          <div class="step-desc">Tap <strong>HeadSync Optimizer</strong> under the notification. Then tap <strong>"Install"</strong> in the top-right corner.</div>
-        </div>
-      </div>
-      <div class="install-step">
-        <span class="step-emoji">🔑</span>
-        <div class="step-body">
-          <div class="step-title">Enter Passcode</div>
-          <div class="step-desc">Enter your <strong>device passcode</strong> when prompted. This is required by iOS for security.</div>
-        </div>
-      </div>
-      <div class="install-step">
-        <span class="step-emoji">🚀</span>
-        <div class="step-body">
-          <div class="step-title">Launch Free Fire</div>
-          <div class="step-desc">Profile is now active. Open <strong>Free Fire</strong> and enjoy optimized performance!</div>
-        </div>
-      </div>
-    </div>
-    <div class="install-note">
-      <strong>⚠ Note:</strong> If you don't see "Profile Downloaded", download the config file first via the Install button in Settings → General → VPN &amp; Device Management.
-    </div>
-    <button class="boost-btn" style="margin:0;width:100%;display:block" onclick="closeInstallGuide()">
-      GOT IT — LET'S GO
-    </button>
-  </div>
-</div>
 
 <!-- ── TOAST ── -->
 <div id="toast">
@@ -1281,9 +1186,6 @@ function onBoostComplete() {
   document.getElementById('last-boost-time').textContent = 'just now';
 
   showToast('OPTIMIZATION APPLIED!', 'success');
-
-  // Show install guide after 2 seconds
-  setTimeout(() => showInstallGuide(), 2000);
 }
 
 function animateCounter(el, from, to, duration, suffix, down) {
@@ -1301,25 +1203,6 @@ function animateCounter(el, from, to, duration, suffix, down) {
     }
   }
   requestAnimationFrame(step);
-}
-
-/* ═══════════════════════════════════════════
-   INSTALL GUIDE
-═══════════════════════════════════════════ */
-function showInstallGuide() {
-  const m = document.getElementById('install-modal');
-  m.style.display = 'flex';
-  requestAnimationFrame(() => { m.style.opacity = '1'; });
-}
-
-function closeInstallGuide() {
-  const m = document.getElementById('install-modal');
-  m.style.opacity = '0';
-  setTimeout(() => { m.style.display = 'none'; m.style.opacity = ''; }, 350);
-}
-
-function handleInstallOverlayClick(e) {
-  if (e.target === document.getElementById('install-modal')) closeInstallGuide();
 }
 
 /* ═══════════════════════════════════════════
