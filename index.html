@@ -1,30 +1,34 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="HeadSync" />
-  <title>HeadSync</title>
+  <meta name="description" content="HeadSync — Advanced Game Performance Optimizer. Maximize FPS, reduce ping, eliminate recoil for Free Fire." />
+  <title>HeadSync — Advanced Optimizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
   <style>
     :root {
-      --bg-dark: #070709;
-      --bg-panel: rgba(22, 22, 26, 0.7);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent: #ef4444; /* Đổi màu chủ đạo sang Đỏ/Trắng cho hợp với Logo */
-      --accent-glow: rgba(239, 68, 68, 0.5);
-      --border: rgba(255, 255, 255, 0.08);
-      --success: #10b981;
-      --danger: #ef4444;
-      --term-green: #22c55e;
+      --bg-dark:      #070709;
+      --bg-panel:     rgba(22, 22, 26, 0.75);
+      --text-main:    #f3f4f6;
+      --text-muted:   #9ca3af;
+      --accent:       #ef4444;
+      --accent-glow:  rgba(239, 68, 68, 0.5);
+      --border:       rgba(255, 255, 255, 0.08);
+      --success:      #10b981;
+      --success-glow: rgba(16, 185, 129, 0.4);
+      --danger:       #ef4444;
+      --term-green:   #22c55e;
+      --gold:         #f59e0b;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg-dark);
@@ -32,190 +36,343 @@
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
     }
 
-    /* ── EFFECTS & BACKGROUND ── */
+    /* ═══════════════════════════════════════
+       BACKGROUND EFFECTS
+    ═══════════════════════════════════════ */
+    #particle-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      opacity: 0.6;
+    }
     .bg-effects {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 0;
-      overflow: hidden;
+      pointer-events: none; z-index: 0; overflow: hidden;
     }
-    
-    /* Lưới 3D Ma trận */
     .bg-grid {
       position: absolute; width: 200%; height: 200%;
       top: -10%; left: -50%;
-      background-image: 
-        linear-gradient(rgba(239, 68, 68, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(239, 68, 68, 0.05) 1px, transparent 1px);
+      background-image:
+        linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px);
       background-size: 40px 40px;
       transform: perspective(600px) rotateX(60deg) translateY(-100px) translateZ(-200px);
-      animation: gridMove 10s linear infinite;
+      animation: gridMove 12s linear infinite;
     }
     @keyframes gridMove {
-      0% { transform: perspective(600px) rotateX(60deg) translateY(0) translateZ(-200px); }
+      0%   { transform: perspective(600px) rotateX(60deg) translateY(0)    translateZ(-200px); }
       100% { transform: perspective(600px) rotateX(60deg) translateY(40px) translateZ(-200px); }
     }
-
     .ambient-glow {
-      position: absolute; width: 500px; height: 500px;
-      border-radius: 50%;
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
       background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
-      filter: blur(80px); opacity: 0.4;
-      animation: floatGlow 10s ease-in-out infinite alternate;
+      filter: blur(80px); opacity: 0.3;
+      animation: floatGlow 12s ease-in-out infinite alternate;
     }
-    .ambient-glow.top { top: -200px; left: -150px; }
-    .ambient-glow.bottom { bottom: -200px; right: -150px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%); animation-delay: -5s; }
-
+    .ambient-glow.top    { top: -200px; left: -150px; }
+    .ambient-glow.bottom { bottom: -200px; right: -150px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%); animation-delay: -6s; }
     @keyframes floatGlow {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(40px, 40px) scale(1.1); }
+      0%   { transform: translate(0,0)      scale(1);   }
+      100% { transform: translate(40px,40px) scale(1.1); }
     }
 
-    /* ── LIVE TICKER ── */
+    /* ═══════════════════════════════════════
+       LIVE TICKER
+    ═══════════════════════════════════════ */
     .live-ticker {
       position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
-      background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid var(--accent);
-      padding: 4px 0; font-family: 'Orbitron', monospace; font-size: 10px;
+      background: rgba(0,0,0,0.85); border-bottom: 1px solid rgba(239,68,68,0.6);
+      padding: 5px 0; font-family: 'Orbitron', monospace; font-size: 10px;
       color: var(--accent); overflow: hidden; white-space: nowrap;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
     }
-    .ticker-content {
-      display: inline-block; animation: ticker 20s linear infinite;
-      letter-spacing: 1px;
-    }
+    .ticker-content { display: inline-block; animation: ticker 30s linear infinite; letter-spacing: 1px; }
     @keyframes ticker {
-      0% { transform: translateX(100vw); }
+      0%   { transform: translateX(100vw); }
       100% { transform: translateX(-100%); }
     }
 
-    /* ── SPLASH SCREEN ── */
+    /* ═══════════════════════════════════════
+       SPLASH
+    ═══════════════════════════════════════ */
     #splash {
       position: fixed; inset: 0; background: var(--bg-dark);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 9999; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 9999; transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1);
     }
     #splash.hide { opacity: 0; pointer-events: none; }
+    .splash-logo-wrap { position: relative; margin-bottom: 24px; }
     .splash-logo {
-      width: 110px; height: 110px; border-radius: 50%; /* Chỉnh thành hình tròn cho hợp logo */
+      width: 110px; height: 110px; border-radius: 50%;
       background: var(--bg-panel); display: flex; align-items: center; justify-content: center;
       box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-      border: 2px solid var(--accent); margin-bottom: 24px; position: relative;
-      overflow: hidden;
+      border: 2px solid var(--accent); position: relative; overflow: hidden; z-index: 2;
     }
-    .splash-logo::after {
-      content: ''; position: absolute; inset: -2px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), transparent); z-index: -1; opacity: 0.8;
-      animation: spinBorder 2s linear infinite;
-    }
-    @keyframes spinBorder { 100% { transform: rotate(360deg); } }
     .splash-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .radar-ring {
+      position: absolute; border-radius: 50%; border: 1px solid var(--accent);
+      top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0);
+      animation: radarPulse 2.5s ease-out infinite;
+      pointer-events: none;
+    }
+    .radar-ring:nth-child(1) { width: 110px; height: 110px; animation-delay: 0s; }
+    .radar-ring:nth-child(2) { width: 110px; height: 110px; animation-delay: 0.8s; }
+    .radar-ring:nth-child(3) { width: 110px; height: 110px; animation-delay: 1.6s; }
+    @keyframes radarPulse {
+      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.7; }
+      100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+    }
     .splash-title { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 4px; margin-bottom: 8px; text-shadow: 0 0 15px var(--accent-glow); }
     .splash-sub { color: var(--text-muted); font-size: 12px; letter-spacing: 2px; margin-bottom: 40px; }
     .loader { width: 200px; height: 2px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-    .loader-bar { height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); animation: loading 2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .loader-bar { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); box-shadow: 0 0 15px var(--accent); animation: loading 2s cubic-bezier(0.4,0,0.2,1) forwards; }
     @keyframes loading { 0% { width: 0; } 100% { width: 100%; } }
 
-    /* ── LOGIN SCREEN ── */
+    /* ═══════════════════════════════════════
+       LOGIN
+    ═══════════════════════════════════════ */
     #login-screen {
       position: fixed; inset: 0; z-index: 100;
-      background: rgba(7, 7, 9, 0.9); backdrop-filter: blur(10px);
+      background: rgba(7,7,9,0.92); backdrop-filter: blur(12px);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
     }
     #login-screen.show { opacity: 1; pointer-events: auto; }
     .modal-box {
       width: 320px; background: var(--bg-panel); border: 1px solid var(--border);
-      border-radius: 20px; padding: 40px 30px; text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+      border-radius: 24px; padding: 40px 30px; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
+      animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
+    @keyframes modalIn { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .modal-lock-icon { margin-bottom: 20px; filter: drop-shadow(0 0 12px var(--accent-glow)); }
+    .modal-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #fff; margin-bottom: 6px; }
+    .modal-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
     #key-input {
-      width: 100%; padding: 18px; margin-bottom: 24px;
-      background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+      width: 100%; padding: 16px; margin-bottom: 20px;
+      background: rgba(0,0,0,0.6); border: 1px solid var(--border);
       border-radius: 12px; color: var(--accent); font-family: 'Orbitron', sans-serif;
-      font-size: 18px; text-align: center; outline: none; letter-spacing: 2px;
+      font-size: 16px; text-align: center; outline: none; letter-spacing: 3px;
       transition: all 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
     }
-    #key-input:focus { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+    #key-input:focus { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow), inset 0 2px 10px rgba(0,0,0,0.5); }
     #key-input.error { border-color: var(--danger); animation: shake 0.4s; color: var(--danger); }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-6px); }
+      40%,80%  { transform: translateX(6px); }
+    }
 
-    /* ── MAIN APP ── */
+    /* ═══════════════════════════════════════
+       MAIN APP
+    ═══════════════════════════════════════ */
     #app { display: none; position: relative; z-index: 10; padding-top: 20px; }
-    #app.show { display: block; animation: fadeIn 0.6s ease-out; }
+    #app.show { display: block; animation: fadeInUp 0.6s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Header */
-    header { padding: 40px 24px 10px; text-align: center; }
-    .header-logo { width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+    /* ─── Header ─── */
+    header { padding: 40px 24px 12px; text-align: center; }
+    .header-logo-wrap { position: relative; width: 72px; height: 72px; margin: 0 auto 15px; }
+    .header-logo {
+      width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
+      border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+      position: relative; z-index: 2;
+    }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .header-radar {
+      position: absolute; border-radius: 50%; border: 1px solid var(--accent);
+      top: 50%; left: 50%; transform: translate(-50%,-50%) scale(1);
+      animation: headerRadar 2.5s ease-out infinite; pointer-events: none;
+      width: 72px; height: 72px;
+    }
+    .header-radar:nth-child(2) { animation-delay: 0s; }
+    .header-radar:nth-child(3) { animation-delay: 0.9s; }
+    @keyframes headerRadar {
+      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.6; }
+      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+    }
     h1 { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px var(--accent-glow); }
-    .header-sub { color: var(--text-muted); font-size: 12px; margin-top: 8px; letter-spacing: 1px; }
+    .header-sub { color: var(--text-muted); font-size: 12px; margin-top: 6px; letter-spacing: 1px; }
+    .version-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 8px; padding: 4px 10px; border-radius: 20px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      font-size: 9px; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
+      color: var(--accent);
+    }
+    .version-dot { width: 5px; height: 5px; background: var(--success); border-radius: 50%; animation: pulseDot 1.5s infinite; }
 
-    /* Device Scanner */
+    /* ─── Device Scanner ─── */
     .device-scanner {
-      margin: 15px 20px; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 20px; font-family: 'Orbitron', monospace;
-      backdrop-filter: blur(10px);
+      margin: 15px 20px; background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px 18px; font-family: 'Orbitron', monospace;
+      backdrop-filter: blur(10px); transition: border-color 0.3s;
     }
-    .scanner-header {
-      font-size: 11px; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px;
+    .device-scanner.connected { border-color: rgba(16,185,129,0.3); }
+    .scanner-header { font-size: 11px; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+    .blink-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulseDot 1.2s infinite; flex-shrink: 0; }
+    @keyframes pulseDot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.3; transform: scale(0.6); }
     }
-    .blink-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulseDot 1s infinite; }
-    .scan-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
-    .scan-val { color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; }
+    .scan-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); margin-bottom: 7px; }
+    .scan-row:last-child { margin-bottom: 0; }
+    .scan-val { color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; }
+    .scan-tag {
+      display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 8px;
+      font-size: 9px; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
+    }
+    .scan-tag.good { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .scan-tag.warn { background: rgba(239,68,68,0.1); color: var(--accent); border: 1px solid rgba(239,68,68,0.3); }
 
-    /* Status Bar */
+    /* ─── Status Bar ─── */
     .status-bar {
-      margin: 0 20px; background: var(--bg-panel); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-      backdrop-filter: blur(10px);
+      margin: 0 20px 0; background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(10px); gap: 4px;
     }
-    .status-item { text-align: center; }
-    .status-val { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .status-item { text-align: center; flex: 1; }
+    .status-val {
+      font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700;
+      color: var(--text-main); transition: color 0.5s, transform 0.3s;
+    }
     .status-val.ping { color: var(--success); }
+    .status-val.boosted { color: var(--success); transform: scale(1.1); }
     .status-lbl { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
-    .status-divider { width: 1px; height: 24px; background: var(--border); }
+    .status-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
 
-    /* Sections */
-    .section { padding: 24px 20px 0; }
-    .section-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+    /* ─── Result Card ─── */
+    #boost-result {
+      margin: 12px 20px 0; background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 14px; padding: 14px 18px; display: none;
+      animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #boost-result.show { display: block; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .result-title { font-size: 10px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px; color: var(--success); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .result-item { text-align: center; }
+    .result-before { font-size: 10px; color: var(--text-muted); text-decoration: line-through; }
+    .result-after  { font-size: 16px; font-weight: 700; font-family: 'Orbitron', sans-serif; color: var(--success); }
+    .result-label  { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+    /* ─── Sections ─── */
+    .section { padding: 20px 20px 0; }
+    .section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--accent);
+      margin-bottom: 14px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+    }
     .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-glow), transparent); }
 
-    /* Game Selection */
-    .game-selection { display: flex; gap: 12px; margin-bottom: 8px; }
-    .game-option { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); }
-    .game-option.active { background: rgba(239, 68, 68, 0.15); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-    .game-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #ef4444, #991b1b); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
-    .game-icon.max { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .game-name { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.3; }
-
-    /* Cards */
-    .cards { display: flex; flex-direction: column; gap: 12px; }
-    .card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; backdrop-filter: blur(10px); }
-    .card-icon-feat { width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--accent); }
-    .card-body { flex: 1; }
-    .card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #fff; }
-    .card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-
-    /* Toggle */
-    .toggle { width: 44px; height: 24px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 12px; position: relative; transition: all 0.3s; }
-    .toggle.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 2px; left: 3px; transition: transform 0.3s; }
-    .toggle.on::after { transform: translateX(18px); }
-
-    /* Button */
-    .boost-btn {
-      margin: 30px 20px 0; width: calc(100% - 40px); padding: 18px; border: 1px solid var(--accent);
-      border-radius: 14px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
-      letter-spacing: 2px; color: var(--accent); background: rgba(239, 68, 68, 0.1);
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); transition: all 0.2s; position: relative; overflow: hidden;
+    /* ─── Game Selection ─── */
+    .game-selection { display: flex; gap: 12px; }
+    .game-option {
+      flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 14px;
+      padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+      transition: all 0.25s; backdrop-filter: blur(5px);
     }
-    .boost-btn:active { transform: scale(0.96); }
-    .boost-btn.active { background: var(--accent); color: #fff; box-shadow: 0 0 30px var(--accent-glow); }
+    .game-option:active { transform: scale(0.97); }
+    .game-option.active { background: rgba(239,68,68,0.12); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    .game-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #ef4444, #991b1b); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
+    .game-icon.max { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .game-name { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.4; }
+    .game-name span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
 
-    /* Community Buttons */
-    .community-section { padding: 24px 20px 0; }
-    .community-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; text-align: center; }
+    /* ─── Advanced Settings ─── */
+    .adv-panel {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 14px;
+    }
+    .adv-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .adv-label { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; }
+    .adv-label span { display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
+    .pill-group { display: flex; gap: 6px; }
+    .pill-btn {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+      background: rgba(0,0,0,0.4); color: var(--text-muted); font-family: 'Orbitron', sans-serif;
+      font-size: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .pill-btn.active {
+      background: rgba(239,68,68,0.2); border-color: var(--accent);
+      color: var(--accent); box-shadow: 0 0 8px rgba(239,68,68,0.3);
+    }
+    .pill-btn:active { transform: scale(0.92); }
+    .adv-divider { height: 1px; background: var(--border); }
+    /* Anti-cheat toggle row */
+    .adv-toggle-row { display: flex; align-items: center; justify-content: space-between; }
+
+    /* ─── Cards ─── */
+    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .card {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
+      padding: 15px 16px; display: flex; align-items: center; gap: 14px;
+      backdrop-filter: blur(10px); cursor: pointer;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+      position: relative; overflow: hidden;
+    }
+    .card:active { transform: scale(0.98); }
+    .card.enabled { border-color: rgba(239,68,68,0.35); box-shadow: 0 0 14px rgba(239,68,68,0.1); }
+    .card.pulse-green {
+      animation: cardPulse 0.6s ease-out;
+    }
+    @keyframes cardPulse {
+      0%,100% { box-shadow: 0 0 0 rgba(16,185,129,0); border-color: rgba(239,68,68,0.35); }
+      50%      { box-shadow: 0 0 20px rgba(16,185,129,0.5); border-color: rgba(16,185,129,0.5); }
+    }
+    .card-icon-feat {
+      width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px;
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; color: var(--accent);
+      transition: all 0.25s;
+    }
+    .card.enabled .card-icon-feat { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
+    .card-body { flex: 1; min-width: 0; }
+    .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: #fff; }
+    .card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.45; }
+    .toggle {
+      width: 46px; height: 26px; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+      border-radius: 13px; position: relative; transition: all 0.3s; flex-shrink: 0;
+    }
+    .toggle.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+    .toggle::after {
+      content: ''; position: absolute; width: 20px; height: 20px; background: #fff;
+      border-radius: 50%; top: 2px; left: 3px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .toggle.on::after { transform: translateX(20px); }
+
+    /* ─── Last Boosted ─── */
+    .last-boost-info {
+      text-align: center; margin-top: 10px;
+      font-size: 10px; color: var(--text-muted); font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+    .last-boost-info span { color: var(--accent); }
+
+    /* ─── Boost Button ─── */
+    .boost-btn {
+      margin: 20px 20px 0; width: calc(100% - 40px); padding: 18px; border: 1px solid var(--accent);
+      border-radius: 14px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
+      letter-spacing: 2px; color: var(--accent); background: rgba(239,68,68,0.08);
+      box-shadow: 0 0 20px rgba(239,68,68,0.15); transition: all 0.25s;
+      position: relative; overflow: hidden; display: block;
+    }
+    .boost-btn:active { transform: scale(0.97); }
+    .boost-btn.active { background: var(--accent); color: #fff; box-shadow: 0 0 35px var(--accent-glow); }
+    /* Ripple */
+    .ripple {
+      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.25);
+      transform: scale(0); animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* ─── Community ─── */
+    .community-section { padding: 20px 20px 0; }
+    .community-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; text-align: center; }
     .community-links { display: flex; gap: 12px; }
     .comm-btn {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -224,56 +381,133 @@
       cursor: pointer; text-decoration: none; transition: all 0.25s;
       font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #fff;
     }
-    .comm-btn:active { transform: scale(0.95); }
-    .comm-btn.zalo { border-color: rgba(0, 102, 255, 0.4); }
-    .comm-btn.zalo:hover, .comm-btn.zalo:active { background: rgba(0, 102, 255, 0.15); border-color: #0066ff; box-shadow: 0 0 15px rgba(0, 102, 255, 0.3); }
-    .comm-btn.telegram { border-color: rgba(0, 136, 204, 0.4); }
-    .comm-btn.telegram:hover, .comm-btn.telegram:active { background: rgba(0, 136, 204, 0.15); border-color: #0088cc; box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
+    .comm-btn:active { transform: scale(0.96); }
+    .comm-btn.zalo    { border-color: rgba(0,102,255,0.35); }
+    .comm-btn.zalo:hover    { background: rgba(0,102,255,0.12); border-color: #0066ff; box-shadow: 0 0 15px rgba(0,102,255,0.25); }
+    .comm-btn.telegram      { border-color: rgba(0,136,204,0.35); }
+    .comm-btn.telegram:hover{ background: rgba(0,136,204,0.12); border-color: #0088cc; box-shadow: 0 0 15px rgba(0,136,204,0.25); }
     .comm-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .comm-btn.zalo .comm-icon { background: #0066ff; }
+    .comm-btn.zalo .comm-icon     { background: #0066ff; }
     .comm-btn.telegram .comm-icon { background: #0088cc; }
     .comm-label { font-size: 11px; line-height: 1.3; }
     .comm-label span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 400; }
 
-    /* Terminal Modal */
+    /* ─── Footer ─── */
+    footer {
+      text-align: center; padding: 30px 20px 20px;
+      color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;
+      border-top: 1px solid var(--border); margin-top: 30px;
+    }
+    footer .footer-row { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 8px; }
+    footer a { color: var(--accent); text-decoration: none; font-size: 9px; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ═══════════════════════════════════════
+       TERMINAL MODAL
+    ═══════════════════════════════════════ */
     #progress-modal {
       display: none; position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
       align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
     }
     #progress-modal.show { display: flex; opacity: 1; }
-    
     .terminal-box {
-      width: 320px; background: #000; border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden; box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+      width: 320px; background: #050505; border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 14px; overflow: hidden; box-shadow: 0 0 50px rgba(239,68,68,0.25);
     }
     .terminal-header {
       background: #111; padding: 10px 15px; font-family: 'Orbitron', sans-serif;
       font-size: 10px; color: var(--text-muted); display: flex; justify-content: space-between;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid #1a1a1a; align-items: center;
     }
+    .terminal-dots { display: flex; gap: 5px; }
+    .terminal-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .terminal-dot.red    { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green  { background: #28c840; }
     .terminal-body {
-      padding: 15px; height: 200px; overflow-y: hidden;
+      padding: 14px; height: 210px; overflow-y: hidden;
       font-family: 'Courier New', Courier, monospace; font-size: 11px;
-      color: var(--term-green); line-height: 1.6; text-align: left;
+      color: var(--term-green); line-height: 1.7; text-align: left;
     }
-    .terminal-body div { animation: typeLine 0.1s ease-out; }
-    @keyframes typeLine { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
-    
+    .terminal-body div { animation: typeLine 0.08s ease-out; }
+    @keyframes typeLine { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: translateX(0); } }
     .terminal-progress { height: 3px; background: #111; }
-    .terminal-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 10px var(--accent); }
+    .terminal-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); width: 0%; box-shadow: 0 0 8px var(--accent); transition: width 0.35s ease; }
 
-    /* Toast */
-    #toast {
-      display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.8); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 24px;
-      font-size: 11px; font-family: 'Orbitron', monospace; color: var(--accent); font-weight: 600;
-      box-shadow: 0 0 20px var(--accent-glow); z-index: 300; white-space: nowrap;
-      animation: fade-toast 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* ═══════════════════════════════════════
+       INSTALL GUIDE MODAL
+    ═══════════════════════════════════════ */
+    #install-modal {
+      display: none; position: fixed; inset: 0; z-index: 210;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
+      align-items: flex-end; justify-content: center;
+      opacity: 0; transition: opacity 0.3s;
     }
+    #install-modal.show { display: flex; opacity: 1; }
+    .install-sheet {
+      width: 100%; max-width: 440px; background: #0f0f12;
+      border: 1px solid rgba(16,185,129,0.25); border-radius: 24px 24px 0 0;
+      padding: 28px 24px calc(env(safe-area-inset-bottom) + 28px);
+      animation: sheetUp 0.45s cubic-bezier(0.34,1.56,0.64,1);
+      max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .install-handle { width: 36px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 20px; }
+    .install-header { text-align: center; margin-bottom: 24px; }
+    .install-header h2 { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--success); letter-spacing: 2px; margin-bottom: 6px; }
+    .install-header p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .install-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .install-step {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px;
+      animation: stepIn 0.4s ease-out both;
+    }
+    .install-step:nth-child(1) { animation-delay: 0.1s; }
+    .install-step:nth-child(2) { animation-delay: 0.2s; }
+    .install-step:nth-child(3) { animation-delay: 0.3s; }
+    .install-step:nth-child(4) { animation-delay: 0.4s; }
+    @keyframes stepIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.4); display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--success); flex-shrink: 0;
+    }
+    .step-emoji { font-size: 18px; flex-shrink: 0; }
+    .step-body { flex: 1; }
+    .step-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+    .step-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+    .step-desc strong { color: var(--text-main); }
+    .install-note {
+      background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; padding: 12px 14px; font-size: 11px; color: var(--text-muted);
+      line-height: 1.5; margin-bottom: 20px;
+    }
+    .install-note strong { color: var(--accent); }
+
+    /* ═══════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════ */
+    #toast {
+      position: fixed; bottom: calc(env(safe-area-inset-bottom) + 30px);
+      left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(10,10,12,0.9); border: 1px solid var(--accent); border-radius: 12px;
+      padding: 11px 22px; font-size: 11px; font-family: 'Orbitron', monospace; color: var(--accent);
+      font-weight: 600; box-shadow: 0 0 20px var(--accent-glow); z-index: 400;
+      white-space: nowrap; display: flex; align-items: center; gap: 8px;
+      opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    #toast.success { border-color: var(--success); color: var(--success); box-shadow: 0 0 20px var(--success-glow); }
+    #toast.error   { border-color: var(--danger);  color: var(--danger);  box-shadow: 0 0 20px rgba(239,68,68,0.4); }
+    .toast-icon { font-size: 13px; }
   </style>
 </head>
 <body>
+
+<!-- Particle Canvas -->
+<canvas id="particle-canvas"></canvas>
 
 <div class="bg-effects">
   <div class="bg-grid"></div>
@@ -281,61 +515,84 @@
   <div class="ambient-glow bottom"></div>
 </div>
 
+<!-- Ticker -->
 <div class="live-ticker">
   <div class="ticker-content">
-    [HỆ THỐNG] Server: ONLINE &nbsp;&nbsp;&bull;&nbsp;&nbsp; Bypass Anti-Ban: ACTIVE &nbsp;&nbsp;&bull;&nbsp;&nbsp; Update v1.0.0: Tối ưu hoá iOS 17 &nbsp;&nbsp;&bull;&nbsp;&nbsp; Độ trễ kết nối (Ping): 12ms &nbsp;&nbsp;&bull;&nbsp;&nbsp; Trạng thái bảo mật: MÃ HOÁ 256-BIT
+    [SYSTEM] Server: ONLINE &nbsp;&bull;&nbsp; Anti-Ban Bypass: ACTIVE &nbsp;&bull;&nbsp; Build v1.0.0: iOS 17 Optimized &nbsp;&bull;&nbsp; Network Latency: 12ms &nbsp;&bull;&nbsp; Security: AES-256 ENCRYPTED &nbsp;&bull;&nbsp; DNS Node: SECURE &nbsp;&bull;&nbsp; Touch Precision: 0ms LATENCY &nbsp;&bull;&nbsp; FPS Unlock: READY &nbsp;&bull;&nbsp; Recoil Engine: LOADED
   </div>
 </div>
 
-<!-- SPLASH -->
+<!-- ── SPLASH ── -->
 <div id="splash">
-  <div class="splash-logo">
-    <img src="logo.png" alt="HeadSync Logo" />
+  <div class="splash-logo-wrap">
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+    <div class="splash-logo">
+      <img src="logo.png" alt="HeadSync" />
+    </div>
   </div>
   <div class="splash-title">HEADSYNC</div>
   <div class="splash-sub">ADVANCED OPTIMIZER v1.0</div>
   <div class="loader"><div class="loader-bar"></div></div>
 </div>
 
-<!-- LOGIN -->
+<!-- ── LOGIN ── -->
 <div id="login-screen">
   <div class="modal-box">
-    <div style="margin-bottom: 20px; text-shadow: 0 0 15px var(--accent-glow);">
-      <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <div class="modal-lock-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
       </svg>
     </div>
-    <div style="font-family:'Orbitron', sans-serif; font-size: 16px; color:#fff; margin-bottom: 5px;">CỔNG BẢO MẬT</div>
-    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px;">Yêu cầu mã khoá cấp quyền truy cập</div>
-    <input type="password" id="key-input" placeholder="NHẬP MÃ KEY" onkeypress="handleKeypress(event)" />
-    <button class="boost-btn" style="margin:0; width:100%" onclick="checkKey()">
-      XÁC NHẬN
+    <div class="modal-title">SECURE GATEWAY</div>
+    <div class="modal-sub">Enter your license key<br/>to unlock full access</div>
+    <input type="password" id="key-input" placeholder="ENTER LICENSE KEY" onkeypress="handleKeypress(event)" autocomplete="off" />
+    <button class="boost-btn" style="margin:0;width:100%;display:block" id="btn-verify" onclick="checkKey()">
+      VERIFY ACCESS
     </button>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- ── MAIN APP ── -->
 <div id="app">
 
   <header>
-    <div class="header-logo">
-      <img src="logo.png" alt="HeadSync Logo" />
+    <div class="header-logo-wrap">
+      <div class="header-radar"></div>
+      <div class="header-radar"></div>
+      <div class="header-logo">
+        <img src="logo.png" alt="HeadSync" />
+      </div>
     </div>
     <h1>HEADSYNC</h1>
-    <div class="header-sub">Hệ Thống Tối Ưu Hiệu Năng Chuyên Sâu</div>
+    <div class="header-sub">Advanced Performance Optimizer</div>
+    <div class="version-badge">
+      <span class="version-dot"></span>
+      v1.0.0 &nbsp;·&nbsp; Jun 2025
+    </div>
   </header>
 
-  <div class="device-scanner">
+  <!-- Device Scanner -->
+  <div class="device-scanner" id="scanner-box">
     <div class="scanner-header"><span class="blink-dot"></span> SYSTEM SCAN IN PROGRESS...</div>
     <div class="scanner-info">
-      <div class="scan-row"><span>Thiết bị:</span> <span class="scan-val" id="dev-name">Đang phân tích...</span></div>
-      <div class="scan-row"><span>Hệ điều hành:</span> <span class="scan-val" id="dev-os">Đang phân tích...</span></div>
-      <div class="scan-row"><span>Mạng IP:</span> <span class="scan-val" id="dev-ip">Đang phân tích...</span></div>
-      <div class="scan-row" id="key-expiry-row" style="display:none; color: var(--accent);"><span>Hạn Key:</span> <span class="scan-val" id="key-expiry-val"></span></div>
+      <div class="scan-row"><span>Device</span>      <span class="scan-val" id="dev-name">Analyzing...</span></div>
+      <div class="scan-row"><span>OS</span>           <span class="scan-val" id="dev-os">Analyzing...</span></div>
+      <div class="scan-row"><span>Network IP</span>  <span class="scan-val" id="dev-ip">Analyzing...</span></div>
+      <div class="scan-row" id="key-expiry-row" style="display:none">
+        <span>Key Expires</span>
+        <span class="scan-tag warn" id="key-expiry-val"></span>
+      </div>
+      <div class="scan-row" id="key-type-row" style="display:none">
+        <span>License Type</span>
+        <span class="scan-tag good" id="key-type-val">ACTIVE</span>
+      </div>
     </div>
   </div>
 
+  <!-- Status Bar -->
   <div class="status-bar">
     <div class="status-item">
       <div class="status-val ping" id="ping-val">--</div>
@@ -343,383 +600,752 @@
     </div>
     <div class="status-divider"></div>
     <div class="status-item">
-      <div class="status-val" id="ram-val">--</div>
-      <div class="status-lbl">RAM Trống</div>
+      <div class="status-val" id="fps-val">--</div>
+      <div class="status-lbl">FPS</div>
     </div>
     <div class="status-divider"></div>
     <div class="status-item">
-      <div class="status-val" id="dns-val" style="color:var(--success)">SECURE</div>
-      <div class="status-lbl">DNS Node</div>
+      <div class="status-val" id="ram-val">--</div>
+      <div class="status-lbl">Free RAM</div>
+    </div>
+    <div class="status-divider"></div>
+    <div class="status-item">
+      <div class="status-val" id="dns-val" style="color:var(--success);font-size:11px">SECURE</div>
+      <div class="status-lbl">DNS</div>
     </div>
   </div>
 
+  <!-- Boost Result Card -->
+  <div id="boost-result">
+    <div class="result-title">✦ OPTIMIZATION RESULTS</div>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="result-before" id="res-fps-before">32</div>
+        <div class="result-after"  id="res-fps-after">--</div>
+        <div class="result-label">FPS</div>
+      </div>
+      <div class="result-item">
+        <div class="result-before" id="res-ping-before">48ms</div>
+        <div class="result-after"  id="res-ping-after">--</div>
+        <div class="result-label">Ping</div>
+      </div>
+      <div class="result-item">
+        <div class="result-before">1.2GB</div>
+        <div class="result-after" id="res-ram-after">--</div>
+        <div class="result-label">Free RAM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Target Game -->
   <div class="section">
-    <div class="section-title">Chọn Game Mục Tiêu</div>
+    <div class="section-title">Target Game</div>
     <div class="game-selection">
       <div class="game-option active" id="game-ff-normal" onclick="selectGame('normal')">
         <div class="game-icon">FF</div>
-        <div class="game-name">Free Fire<br/>Bản Thường</div>
+        <div class="game-name">Free Fire<span>Standard Edition</span></div>
       </div>
       <div class="game-option" id="game-ff-max" onclick="selectGame('max')">
         <div class="game-icon max">MAX</div>
-        <div class="game-name">Free Fire<br/>Bản MAX</div>
+        <div class="game-name">Free Fire<span>MAX Edition</span></div>
       </div>
     </div>
   </div>
 
+  <!-- Advanced Settings -->
   <div class="section">
-    <div class="section-title">Tính Năng Cốt Lõi</div>
+    <div class="section-title">Advanced Settings</div>
+    <div class="adv-panel">
+      <div class="adv-row">
+        <div class="adv-label">FPS Cap<span>Target frame rate</span></div>
+        <div class="pill-group" id="fps-group">
+          <button class="pill-btn" onclick="setFpsCap(30,this)">30</button>
+          <button class="pill-btn" onclick="setFpsCap(60,this)">60</button>
+          <button class="pill-btn active" onclick="setFpsCap(90,this)">90</button>
+          <button class="pill-btn" onclick="setFpsCap(120,this)">120</button>
+        </div>
+      </div>
+      <div class="adv-divider"></div>
+      <div class="adv-row">
+        <div class="adv-label">Graphics<span>Rendering quality</span></div>
+        <div class="pill-group" id="gfx-group">
+          <button class="pill-btn active" onclick="setGraphics('low',this)">LOW</button>
+          <button class="pill-btn" onclick="setGraphics('med',this)">MED</button>
+          <button class="pill-btn" onclick="setGraphics('high',this)">HIGH</button>
+        </div>
+      </div>
+      <div class="adv-divider"></div>
+      <div class="adv-row adv-toggle-row">
+        <div class="adv-label">Anti-Cheat Shield<span>Mask optimizer signature</span></div>
+        <div class="toggle" id="toggle-anticheat" onclick="toggleAntiCheat()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Features -->
+  <div class="section">
+    <div class="section-title">Core Features</div>
     <div class="cards">
-      <div class="card" onclick="toggleFeature('boost')">
+
+      <div class="card" id="card-boost" onclick="toggleFeature('boost')">
         <div class="card-icon-feat">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Can Thiệp Bộ Nhớ</div>
-          <div class="card-desc">Can thiệp bộ nhớ đệm, tối đa hoá FPS.</div>
+          <div class="card-title">Memory Boost</div>
+          <div class="card-desc">Intercept memory buffers to maximize FPS output.</div>
         </div>
-        <div class="card-action"><div class="toggle on" id="toggle-boost"></div></div>
+        <div class="toggle" id="toggle-boost"></div>
       </div>
 
-      <div class="card" onclick="toggleFeature('aim')">
+      <div class="card" id="card-aim" onclick="toggleFeature('aim')">
         <div class="card-icon-feat">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Hiệu Chỉnh Cảm Ứng</div>
-          <div class="card-desc">Loại bỏ độ trễ (delay) cảm ứng tuyệt đối.</div>
+          <div class="card-title">Touch Calibration</div>
+          <div class="card-desc">Eliminate touch input delay — absolute zero latency.</div>
         </div>
-        <div class="card-action"><div class="toggle on" id="toggle-aim"></div></div>
+        <div class="toggle" id="toggle-aim"></div>
       </div>
 
-      <div class="card" onclick="toggleFeature('vibrate')">
+      <div class="card" id="card-vibrate" onclick="toggleFeature('vibrate')">
         <div class="card-icon-feat">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Giảm Giật Vũ Khí</div>
-          <div class="card-desc">Cân bằng gia tốc, giảm giật khung hình 80%.</div>
+          <div class="card-title">Recoil Reduction</div>
+          <div class="card-desc">Stabilize frame acceleration, reduce recoil by 80%.</div>
         </div>
-        <div class="card-action"><div class="toggle on" id="toggle-vibrate"></div></div>
+        <div class="toggle" id="toggle-vibrate"></div>
       </div>
 
-      <div class="card" onclick="toggleFeature('reg')">
+      <div class="card" id="card-reg" onclick="toggleFeature('reg')">
         <div class="card-icon-feat">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
         </div>
         <div class="card-body">
-          <div class="card-title">Vượt Tường Lửa DNS</div>
-          <div class="card-desc">Bypass máy chủ Garena, chặn ping ảo.</div>
+          <div class="card-title">DNS Firewall Bypass</div>
+          <div class="card-desc">Reroute Garena servers, block ghost ping spikes.</div>
         </div>
-        <div class="card-action"><div class="toggle on" id="toggle-reg"></div></div>
+        <div class="toggle" id="toggle-reg"></div>
       </div>
+
     </div>
   </div>
 
-  <button class="boost-btn" id="btn-execute" onclick="startBoost()">
-    > APPLY OPTIMIZATION
+  <button class="boost-btn" id="btn-execute" onclick="startBoost(event)">
+    &#62; APPLY OPTIMIZATION
   </button>
+  <div class="last-boost-info" id="last-boost-label">Last optimized: <span id="last-boost-time">never</span></div>
 
-  <!-- COMMUNITY LINKS -->
+  <!-- Community -->
   <div class="community-section">
-    <div class="community-title">Tham gia cộng đồng</div>
+    <div class="community-title">Join the Community</div>
     <div class="community-links">
       <a href="https://zalo.me/g/ibyisiar5mlfgy5dwfh3" target="_blank" class="comm-btn zalo">
         <div class="comm-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><text y="17" font-size="14" font-weight="bold" font-family="Arial">Z</text></svg>
         </div>
-        <div class="comm-label">Nhóm Zalo<span>Hỗ trợ &amp; cập nhật</span></div>
+        <div class="comm-label">Zalo Group<span>Support &amp; updates</span></div>
       </a>
       <a href="https://t.me/duskiosvip" target="_blank" class="comm-btn telegram">
         <div class="comm-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247l-2.035 9.586c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.46 14.607 4.5 13.71c-.65-.204-.663-.65.136-.961l10.89-4.198c.543-.194 1.018.131.836.696z"/></svg>
         </div>
-        <div class="comm-label">Telegram VIP<span>Tin tức &amp; key mới</span></div>
+        <div class="comm-label">Telegram VIP<span>News &amp; new keys</span></div>
       </a>
     </div>
   </div>
 
-  <footer style="text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;">
-    HEADSYNC &copy; 2025<br/>
-    CẤM SAO CHÉP &amp; PHÂN PHỐI TRÁI PHÉP
+  <footer>
+    <div class="footer-row">
+      <span>HEADSYNC &copy; 2025</span>
+      <span style="color:var(--border)">|</span>
+      <span>v1.0.0</span>
+      <span style="color:var(--border)">|</span>
+      <a href="https://t.me/duskiosvip" target="_blank">Report Issue</a>
+    </div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.2)">UNAUTHORIZED COPYING OR DISTRIBUTION IS PROHIBITED</div>
   </footer>
-</div>
 
-<!-- TERMINAL MODAL -->
+</div><!-- /#app -->
+
+<!-- ── TERMINAL MODAL ── -->
 <div id="progress-modal">
   <div class="terminal-box">
     <div class="terminal-header">
-      <span>root@headsync:~/optimizer</span>
+      <div class="terminal-dots">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+      </div>
+      <span style="font-size:9px">root@headsync:~/optimizer</span>
       <span id="term-status">RUNNING</span>
     </div>
-    <div class="terminal-body" id="term-log">
-      <!-- Logs will appear here -->
-    </div>
-    <div class="terminal-progress">
-      <div class="terminal-fill" id="term-fill"></div>
-    </div>
+    <div class="terminal-body" id="term-log"></div>
+    <div class="terminal-progress"><div class="terminal-fill" id="term-fill"></div></div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div id="toast"></div>
+<!-- ── INSTALL GUIDE MODAL ── -->
+<div id="install-modal" onclick="handleInstallOverlayClick(event)">
+  <div class="install-sheet" id="install-sheet">
+    <div class="install-handle"></div>
+    <div class="install-header">
+      <h2>✦ INSTALL PROFILE</h2>
+      <p>Follow these steps to activate<br/>HeadSync on your device</p>
+    </div>
+    <div class="install-steps">
+      <div class="install-step">
+        <span class="step-emoji">⚙️</span>
+        <div class="step-body">
+          <div class="step-title">Open Settings</div>
+          <div class="step-desc">Go to your iPhone <strong>Settings</strong> app. Look for the <strong>"Profile Downloaded"</strong> notification at the top.</div>
+        </div>
+      </div>
+      <div class="install-step">
+        <span class="step-emoji">📋</span>
+        <div class="step-body">
+          <div class="step-title">Tap the Profile</div>
+          <div class="step-desc">Tap <strong>HeadSync Optimizer</strong> under the notification. Then tap <strong>"Install"</strong> in the top-right corner.</div>
+        </div>
+      </div>
+      <div class="install-step">
+        <span class="step-emoji">🔑</span>
+        <div class="step-body">
+          <div class="step-title">Enter Passcode</div>
+          <div class="step-desc">Enter your <strong>device passcode</strong> when prompted. This is required by iOS for security.</div>
+        </div>
+      </div>
+      <div class="install-step">
+        <span class="step-emoji">🚀</span>
+        <div class="step-body">
+          <div class="step-title">Launch Free Fire</div>
+          <div class="step-desc">Profile is now active. Open <strong>Free Fire</strong> and enjoy optimized performance!</div>
+        </div>
+      </div>
+    </div>
+    <div class="install-note">
+      <strong>⚠ Note:</strong> If you don't see "Profile Downloaded", download the config file first via the Install button in Settings → General → VPN &amp; Device Management.
+    </div>
+    <button class="boost-btn" style="margin:0;width:100%;display:block" onclick="closeInstallGuide()">
+      GOT IT — LET'S GO
+    </button>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast">
+  <span class="toast-icon" id="toast-icon">◉</span>
+  <span id="toast-msg"></span>
+</div>
 
 <script>
-  // AUDIO SYNTHESIZER cho hiệu ứng âm thanh Hacker
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  let audioCtx;
-  
-  function initAudio() {
-    if(!audioCtx) audioCtx = new AudioContext();
-    if(audioCtx.state === 'suspended') audioCtx.resume();
+/* ═══════════════════════════════════════════
+   PARTICLE SYSTEM
+═══════════════════════════════════════════ */
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COUNT = 35;
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x:  Math.random() * W,
+      y:  Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r:  Math.random() * 1.8 + 0.5,
+    });
   }
 
-  function playBeep(freq = 800, type = 'sine', duration = 0.05, vol = 0.05) {
-    if(!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(239,68,68,${0.12 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw dots
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(239,68,68,0.5)';
+      ctx.fill();
+      // Move
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    });
+    requestAnimationFrame(draw);
   }
+  draw();
+})();
 
-  // CẤU HÌNH SUPABASE & HWID
-  const SUPABASE_URL = "https://rorciwilwxzqakdflkes.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_bpEASGGGcJa74DKjzH27Ig_ipM9HEhB";
-  const HEADERS = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+/* ═══════════════════════════════════════════
+   AUDIO
+═══════════════════════════════════════════ */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function initAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playBeep(freq = 800, type = 'sine', duration = 0.05, vol = 0.05) {
+  if (!audioCtx) return;
+  const osc  = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type; osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
 
-  let HWID = "UNKNOWN_DEVICE";
-  FingerprintJS.load().then(fp => fp.get()).then(result => { HWID = result.visitorId; });
+/* ═══════════════════════════════════════════
+   CONFIG & STATE
+═══════════════════════════════════════════ */
+const SUPABASE_URL = "https://rorciwilwxzqakdflkes.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bpEASGGGcJa74DKjzH27Ig_ipM9HEhB";
+const HEADERS = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+  "Content-Type": "application/json",
+  "Prefer": "return=representation"
+};
 
-  const states = { boost: true, aim: true, vibrate: true, reg: true };
-  let selectedGame = 'normal';
+let HWID = "UNKNOWN_DEVICE";
+FingerprintJS.load().then(fp => fp.get()).then(r => { HWID = r.visitorId; });
 
-  // Splash Screen Logic
+const states = { boost: false, aim: false, vibrate: false, reg: false };
+let selectedGame = 'normal';
+let selectedFps  = 90;
+let selectedGfx  = 'low';
+let antiCheatOn  = false;
+let baselinePing = 48;
+
+// Restore last boost time
+const lastBoostRaw = localStorage.getItem('hs_last_boost');
+if (lastBoostRaw) {
+  document.getElementById('last-boost-time').textContent = timeAgo(new Date(lastBoostRaw));
+}
+
+/* ═══════════════════════════════════════════
+   SPLASH → LOGIN
+═══════════════════════════════════════════ */
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hide');
   setTimeout(() => {
-    document.getElementById('splash').classList.add('hide');
+    document.getElementById('login-screen').classList.add('show');
+    document.getElementById('key-input').focus();
+  }, 800);
+}, 2500);
+
+/* ═══════════════════════════════════════════
+   KEY VERIFICATION
+═══════════════════════════════════════════ */
+function handleKeypress(event) {
+  initAudio();
+  playBeep(1000, 'square', 0.02, 0.02);
+  if (event.key === "Enter") checkKey();
+}
+
+async function checkKey() {
+  initAudio();
+  const input = document.getElementById('key-input');
+  const inputKey = input.value.trim();
+  if (!inputKey) return;
+
+  const btn = document.getElementById('btn-verify');
+  const old = btn.textContent;
+  btn.textContent = "VERIFYING...";
+
+  try {
+    const res  = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}&select=*`, { headers: HEADERS });
+    const data = await res.json();
+
+    if (data.length === 0) throw new Error("License key not found.");
+    const kd = data[0];
+    if (!kd.is_active) throw new Error("Key has been deactivated.");
+
+    let reg = kd.registered_hwids || [];
+    if (reg.includes(HWID)) {
+      if (kd.expires_at && Date.now() > new Date(kd.expires_at).getTime())
+        throw new Error("Your license key has expired.");
+    } else {
+      if (reg.length >= kd.max_devices)
+        throw new Error(`Device limit reached (max ${kd.max_devices}).`);
+      reg.push(HWID);
+      let upd = { registered_hwids: reg };
+      if (reg.length === 1) {
+        const ms = kd.duration_days * 86400000;
+        upd.expires_at = new Date(Date.now() + ms).toISOString();
+      }
+      await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
+        method: "PATCH", headers: HEADERS, body: JSON.stringify(upd)
+      });
+      kd.expires_at = upd.expires_at;
+    }
+
+    playBeep(1200, 'sine', 0.1, 0.1);
+    playBeep(1600, 'sine', 0.15, 0.1);
+    document.getElementById('login-screen').classList.remove('show');
+    showToast('ACCESS GRANTED', 'success');
+
+    if (kd.expires_at) {
+      const exp = new Date(kd.expires_at);
+      document.getElementById('key-expiry-row').style.display = 'flex';
+      document.getElementById('key-expiry-val').textContent = exp.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    }
+    document.getElementById('key-type-row').style.display = 'flex';
+    document.getElementById('key-type-val').textContent = kd.duration_days + '-DAY LICENSE';
+
     setTimeout(() => {
-      document.getElementById('login-screen').classList.add('show');
-      document.getElementById('key-input').focus();
-    }, 800);
-  }, 2500);
+      document.getElementById('app').classList.add('show');
+      initDeviceScanner();
+      initStats();
+    }, 500);
 
-  function handleKeypress(event) {
-    initAudio();
-    playBeep(1000, 'square', 0.02, 0.02);
-    if (event.key === "Enter") checkKey();
+  } catch(err) {
+    playBeep(300, 'sawtooth', 0.3, 0.1);
+    input.classList.add('error');
+    showToast(err.message || 'System error.', 'error');
+    setTimeout(() => input.classList.remove('error'), 800);
+  } finally {
+    btn.textContent = old;
   }
+}
 
-  async function checkKey() {
-    initAudio();
-    const input = document.getElementById('key-input');
-    const inputKey = input.value.trim();
-    if(!inputKey) return;
+/* ═══════════════════════════════════════════
+   DEVICE SCANNER & STATS
+═══════════════════════════════════════════ */
+function initDeviceScanner() {
+  setTimeout(() => {
+    const ua = navigator.userAgent;
+    let dev = "Desktop Client", os = navigator.platform;
+    if      (/iPhone|iPad|iPod/.test(ua)) { dev = "Apple iOS Device"; os = "iOS " + (ua.match(/OS (\d+_\d+)/)||['','?'])[1].replace('_','.'); }
+    else if (/Android/.test(ua))          { dev = "Android Device";   os = "Android " + (ua.match(/Android (\d+\.?\d*)/)||['','?'])[1]; }
 
-    const btn = input.nextElementSibling;
-    const oldText = btn.textContent;
-    btn.textContent = "ĐANG XÁC THỰC...";
+    const ip = `${Math.floor(Math.random()*150+50)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.x`;
+    document.getElementById('dev-name').textContent = dev;
+    document.getElementById('dev-os').textContent   = os;
+    document.getElementById('dev-ip').textContent   = ip;
 
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}&select=*`, { headers: HEADERS });
-      const data = await res.json();
+    const hdr = document.querySelector('.scanner-header');
+    hdr.innerHTML = '<span class="blink-dot" style="background:var(--success)"></span> CONNECTED TO DEVICE';
+    hdr.style.color = 'var(--success)';
+    document.getElementById('scanner-box').classList.add('connected');
+    playBeep(2000, 'sine', 0.05, 0.05);
+  }, 1500);
+}
 
-      if(data.length === 0) throw new Error("Mã Key không tồn tại!");
-      const keyData = data[0];
+function initStats() {
+  baselinePing = Math.floor(Math.random() * 30 + 28);
+  setTimeout(() => {
+    document.getElementById('ping-val').textContent = baselinePing;
+    document.getElementById('ram-val').textContent  = Math.floor(Math.random()*300+1400)+'M';
+    document.getElementById('fps-val').textContent  = Math.floor(Math.random()*10+22);
+  }, 400);
+  setInterval(() => {
+    if (!document.getElementById('boost-result').classList.contains('show')) {
+      document.getElementById('ping-val').textContent = Math.floor(Math.random()*12 + baselinePing - 5);
+    }
+  }, 3000);
+}
 
-      if(!keyData.is_active) throw new Error("Key đã bị khóa bởi Admin!");
+/* ═══════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════ */
+function setFpsCap(fps, btn) {
+  initAudio(); playBeep(700, 'sine', 0.04, 0.03);
+  selectedFps = fps;
+  document.querySelectorAll('#fps-group .pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  localStorage.setItem('hs_fps', fps);
+}
 
-      let registered = keyData.registered_hwids || [];
-      
-      if(registered.includes(HWID)) {
-          // Máy này đã nằm trong danh sách
-          if(keyData.expires_at && Date.now() > new Date(keyData.expires_at).getTime()) {
-              throw new Error("Key của bạn đã hết hạn!");
-          }
-      } else {
-          // Máy này chưa nằm trong danh sách, kiểm tra slot trống
-          if(registered.length >= keyData.max_devices) {
-              throw new Error(`Key này đã đạt giới hạn thiết bị tối đa (${keyData.max_devices} máy)!`);
-          }
-          
-          // Thêm máy mới vào danh sách
-          registered.push(HWID);
-          let updateData = { registered_hwids: registered };
-          
-          // Nếu đây là người dùng đầu tiên (kích hoạt key), bắt đầu đếm ngược thời gian
-          if(registered.length === 1) {
-              const durationMs = keyData.duration_days * 24 * 60 * 60 * 1000;
-              updateData.expires_at = new Date(Date.now() + durationMs).toISOString();
-          }
+function setGraphics(level, btn) {
+  initAudio(); playBeep(750, 'sine', 0.04, 0.03);
+  selectedGfx = level;
+  document.querySelectorAll('#gfx-group .pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  localStorage.setItem('hs_gfx', level);
+}
 
-          await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
-            method: "PATCH",
-            headers: HEADERS,
-            body: JSON.stringify(updateData)
-          });
-          
-          keyData.expires_at = updateData.expires_at;
-      }
+function toggleAntiCheat() {
+  initAudio();
+  antiCheatOn = !antiCheatOn;
+  const t = document.getElementById('toggle-anticheat');
+  t.classList.toggle('on', antiCheatOn);
+  playBeep(antiCheatOn ? 900 : 600, 'square', 0.05, 0.03);
+  if (navigator.vibrate) navigator.vibrate(antiCheatOn ? 50 : 30);
+  showToast(antiCheatOn ? 'ANTI-CHEAT SHIELD: ON' : 'ANTI-CHEAT SHIELD: OFF', antiCheatOn ? 'success' : 'info');
+}
 
-      playBeep(1200, 'sine', 0.1, 0.1);
-      playBeep(1600, 'sine', 0.15, 0.1);
-      document.getElementById('login-screen').classList.remove('show');
-      showToast('XÁC THỰC THÀNH CÔNG!');
-      
-      // Hiển thị hạn Key
-      if(keyData.expires_at) {
-          const expDate = new Date(keyData.expires_at);
-          document.getElementById('key-expiry-row').style.display = "flex";
-          document.getElementById('key-expiry-val').textContent = expDate.toLocaleString('vi-VN');
-      }
+function selectGame(game) {
+  initAudio(); playBeep(800, 'square', 0.05, 0.03);
+  selectedGame = game;
+  document.getElementById('game-ff-normal').classList.toggle('active', game === 'normal');
+  document.getElementById('game-ff-max').classList.toggle('active', game === 'max');
+}
+
+/* ═══════════════════════════════════════════
+   FEATURE TOGGLES
+═══════════════════════════════════════════ */
+function toggleFeature(key) {
+  initAudio();
+  states[key] = !states[key];
+  const on = states[key];
+  document.getElementById('toggle-' + key).classList.toggle('on', on);
+  document.getElementById('card-' + key).classList.toggle('enabled', on);
+  playBeep(on ? 1000 : 700, 'square', 0.05, 0.03);
+  if (navigator.vibrate) navigator.vibrate(on ? 50 : 25);
+  showToast(
+    on ? key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': ENABLED'
+       : key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': DISABLED',
+    on ? 'success' : 'info'
+  );
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function showToast(msg, type = 'info') {
+  const t    = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const txt  = document.getElementById('toast-msg');
+  const icons = { success: '✓', error: '✗', info: '◉' };
+  icon.textContent = icons[type] || '◉';
+  txt.textContent  = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 2500);
+}
+
+/* ═══════════════════════════════════════════
+   RIPPLE EFFECT
+═══════════════════════════════════════════ */
+function createRipple(btn, event) {
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top  - size / 2;
+  const ripple = document.createElement('span');
+  ripple.classList.add('ripple');
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+/* ═══════════════════════════════════════════
+   TERMINAL & BOOST
+═══════════════════════════════════════════ */
+const terminalLogs = [
+  "root@headsync:~# ./optimizer.sh --target {GAME_NAME}",
+  "[+] Initializing HeadSync engine v1.0...",
+  "[+] Target identified: {GAME_NAME}",
+  "[+] Bypassing security layer...",
+  "    -> Auth signature neutralized.",
+  "[+] Allocating memory buffers...",
+  "    -> RAM freed: 450MB.",
+  "    -> Buffer pool: 2048KB ready.",
+  "[!] Injecting touch precision module...",
+  "    -> Input latency set to 0ms.",
+  "[!] Applying recoil correction algorithm...",
+  "    -> Recoil coefficients overridden.",
+  "[+] Setting FPS target: {FPS_CAP}fps...",
+  "    -> Graphics mode: {GFX_MODE}",
+  "[+] Patching network stack...",
+  "    -> DNS rerouted via private relay.",
+  "    -> Ping stabilized at 8ms.",
+  "root@headsync:~# verify --all",
+  "[OK] All modules loaded & active.",
+  "Optimization complete. Enjoy your game.",
+];
+
+function startBoost(event) {
+  initAudio();
+  createRipple(document.getElementById('btn-execute'), event);
+  playBeep(500, 'sawtooth', 0.2, 0.1);
+
+  const btn = document.getElementById('btn-execute');
+  btn.classList.add('active');
+  btn.textContent = '> PROCESSING...';
+
+  const modal    = document.getElementById('progress-modal');
+  const termLog  = document.getElementById('term-log');
+  const termFill = document.getElementById('term-fill');
+  termLog.innerHTML = '';
+  termFill.style.width = '0%';
+  modal.classList.add('show');
+
+  let idx = 0;
+  const gameName = selectedGame === 'normal' ? 'com.dts.freefireth' : 'com.dts.freefiremax';
+
+  const interval = setInterval(() => {
+    if (idx < terminalLogs.length) {
+      let line = terminalLogs[idx]
+        .replace(/{GAME_NAME}/g, gameName)
+        .replace('{FPS_CAP}',  selectedFps)
+        .replace('{GFX_MODE}', selectedGfx.toUpperCase());
+      termLog.innerHTML += `<div>${line}</div>`;
+      termLog.scrollTop  = termLog.scrollHeight;
+      if      (line.includes('root@'))  playBeep(400,  'square',   0.1,  0.05);
+      else if (line.includes('[!]'))    playBeep(900,  'sawtooth', 0.05, 0.05);
+      else if (line.includes('[OK]'))   playBeep(1600, 'sine',     0.08, 0.08);
+      else                              playBeep(1200, 'sine',     0.02, 0.02);
+      termFill.style.width = ((idx + 1) / terminalLogs.length * 100) + '%';
+      idx++;
+    } else {
+      clearInterval(interval);
+      playBeep(1500, 'sine', 0.1,  0.1);
+      playBeep(2000, 'sine', 0.2,  0.1);
+      if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+      document.getElementById('term-status').textContent = 'DONE';
+      document.getElementById('term-status').style.color = 'var(--term-green)';
 
       setTimeout(() => {
-        document.getElementById('app').classList.add('show');
-        initDeviceScanner();
-        initStats();
-      }, 500);
+        modal.classList.remove('show');
+        btn.classList.remove('active');
+        btn.textContent = '> APPLY OPTIMIZATION';
+        document.getElementById('term-status').textContent = 'RUNNING';
+        document.getElementById('term-status').style.color = 'var(--text-muted)';
+        onBoostComplete();
+      }, 1200);
+    }
+  }, 350);
+}
 
-    } catch (err) {
-      playBeep(300, 'sawtooth', 0.3, 0.1);
-      input.classList.add('error');
-      showToast(err.message || 'Lỗi hệ thống!');
-      setTimeout(() => input.classList.remove('error'), 800);
-    } finally {
-      btn.textContent = oldText;
+/* ═══════════════════════════════════════════
+   POST-BOOST ANIMATION
+═══════════════════════════════════════════ */
+function onBoostComplete() {
+  const pingBefore = parseInt(document.getElementById('ping-val').textContent) || baselinePing;
+  const pingAfter  = Math.floor(Math.random() * 5 + 7); // 7-12ms
+  const fpsBefore  = parseInt(document.getElementById('fps-val').textContent)  || 28;
+  const fpsAfter   = selectedFps;
+  const ramAfter   = Math.floor(Math.random() * 300 + 1800) + 'M';
+
+  // Animate status bar
+  animateCounter(document.getElementById('ping-val'), pingBefore, pingAfter, 800, 'ms', true);
+  animateCounter(document.getElementById('fps-val'),  fpsBefore,  fpsAfter,  1000, '', false);
+
+  // Result card
+  document.getElementById('res-fps-before').textContent  = fpsBefore;
+  document.getElementById('res-fps-after').textContent   = fpsAfter;
+  document.getElementById('res-ping-before').textContent = pingBefore + 'ms';
+  document.getElementById('res-ping-after').textContent  = pingAfter  + 'ms';
+  document.getElementById('res-ram-after').textContent   = ramAfter;
+  document.getElementById('boost-result').classList.add('show');
+
+  // Pulse enabled feature cards
+  Object.keys(states).forEach(k => {
+    if (states[k]) {
+      const card = document.getElementById('card-' + k);
+      card.classList.remove('pulse-green');
+      void card.offsetWidth; // reflow
+      card.classList.add('pulse-green');
+    }
+  });
+
+  // Update RAM
+  setTimeout(() => {
+    document.getElementById('ram-val').textContent = ramAfter;
+    document.getElementById('ram-val').classList.add('boosted');
+    setTimeout(() => document.getElementById('ram-val').classList.remove('boosted'), 800);
+  }, 600);
+
+  // Save & update last boost time
+  const now = new Date();
+  localStorage.setItem('hs_last_boost', now.toISOString());
+  document.getElementById('last-boost-time').textContent = 'just now';
+
+  showToast('OPTIMIZATION APPLIED!', 'success');
+
+  // Show install guide after 2 seconds
+  setTimeout(() => showInstallGuide(), 2000);
+}
+
+function animateCounter(el, from, to, duration, suffix, down) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val  = Math.round(from + (to - from) * ease);
+    el.textContent = val + suffix;
+    if (t < 1) requestAnimationFrame(step);
+    else {
+      el.textContent = to + suffix;
+      el.classList.add('boosted');
+      setTimeout(() => el.classList.remove('boosted'), 800);
     }
   }
+  requestAnimationFrame(step);
+}
 
-  function initDeviceScanner() {
-    setTimeout(() => {
-      const ua = navigator.userAgent;
-      let dev = "Unknown Device", os = "Unknown OS";
-      
-      if(/iPhone|iPad|iPod/.test(ua)) { dev = "Apple iOS Device"; os = "iOS (Detected)"; }
-      else if(/Android/.test(ua)) { dev = "Android System"; os = "Android OS (Detected)"; }
-      else { dev = "Desktop Client"; os = navigator.platform; }
-      
-      const fakeIp = Math.floor(Math.random()*150 + 50) + "." + Math.floor(Math.random()*255) + "." + Math.floor(Math.random()*255) + ".x";
-      
-      document.getElementById('dev-name').textContent = dev;
-      document.getElementById('dev-os').textContent = os;
-      document.getElementById('dev-ip').textContent = fakeIp;
-      
-      const header = document.querySelector('.scanner-header');
-      header.innerHTML = '<span class="blink-dot" style="background:var(--success)"></span> CONNECTED TO DEVICE';
-      header.style.color = "var(--success)";
-      
-      playBeep(2000, 'sine', 0.05, 0.05); // Scan complete sound
-    }, 1500);
+/* ═══════════════════════════════════════════
+   INSTALL GUIDE
+═══════════════════════════════════════════ */
+function showInstallGuide() {
+  const m = document.getElementById('install-modal');
+  m.style.display = 'flex';
+  requestAnimationFrame(() => { m.style.opacity = '1'; });
+}
+
+function closeInstallGuide() {
+  const m = document.getElementById('install-modal');
+  m.style.opacity = '0';
+  setTimeout(() => { m.style.display = 'none'; m.style.opacity = ''; }, 350);
+}
+
+function handleInstallOverlayClick(e) {
+  if (e.target === document.getElementById('install-modal')) closeInstallGuide();
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function timeAgo(date) {
+  const diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 60)   return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60)   + 'm ago';
+  if (diff < 86400)return Math.floor(diff / 3600)  + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+// Restore saved settings
+(function restoreSettings() {
+  const savedFps = localStorage.getItem('hs_fps');
+  if (savedFps) {
+    const btn = document.querySelector(`#fps-group .pill-btn[onclick*="${savedFps}"]`);
+    if (btn) { document.querySelectorAll('#fps-group .pill-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedFps = +savedFps; }
   }
-
-  function initStats() {
-    setTimeout(() => {
-      document.getElementById('ping-val').textContent = Math.floor(Math.random()*8+8);
-      document.getElementById('ram-val').textContent = Math.floor(Math.random()*500+1600)+'M';
-    }, 400);
-    setInterval(() => {
-      document.getElementById('ping-val').textContent = Math.floor(Math.random()*8+8);
-    }, 3000);
+  const savedGfx = localStorage.getItem('hs_gfx');
+  if (savedGfx) {
+    const btn = document.querySelector(`#gfx-group .pill-btn[onclick*="${savedGfx}"]`);
+    if (btn) { document.querySelectorAll('#gfx-group .pill-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedGfx = savedGfx; }
   }
-
-  function selectGame(game) {
-    initAudio(); playBeep(800, 'square', 0.05, 0.03);
-    selectedGame = game;
-    document.getElementById('game-ff-normal').classList.remove('active');
-    document.getElementById('game-ff-max').classList.remove('active');
-    if (game === 'normal') document.getElementById('game-ff-normal').classList.add('active');
-    else document.getElementById('game-ff-max').classList.add('active');
-  }
-
-  function toggleFeature(key) {
-    initAudio(); playBeep(900, 'square', 0.05, 0.03);
-    states[key] = !states[key];
-    document.getElementById('toggle-' + key).classList.toggle('on', states[key]);
-    showToast(states[key] ? 'Tính năng: BẬT' : 'Tính năng: TẮT');
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.style.display = 'none'; }, 2000);
-  }
-
-  // TERMINAL LOGIC
-  const terminalLogs = [
-    "root@headsync:~# ./optimizer.sh",
-    "[+] Target identified: {GAME_NAME}",
-    "[+] Bypassing security layer...",
-    "    -> Auth signature neutralized.",
-    "[+] Allocating memory buffers...",
-    "    -> RAM freed: 450MB.",
-    "    -> Buffer pool: 2048KB ready.",
-    "[!] Injecting touch precision module...",
-    "    -> Input latency set to 0ms.",
-    "[!] Applying recoil correction algorithm...",
-    "    -> Recoil coefficients overridden.",
-    "[+] Patching network stack...",
-    "    -> DNS rerouted via private relay.",
-    "    -> Ping stabilized at 12ms.",
-    "root@headsync:~# verify --all",
-    "[OK] All modules loaded & active.",
-    "Optimization complete. Enjoy your game."
-  ];
-
-  function startBoost() {
-    initAudio(); playBeep(500, 'sawtooth', 0.2, 0.1);
-    const btn = document.getElementById('btn-execute');
-    btn.classList.add('active');
-    btn.textContent = '> PROCESSING...';
-
-    const modal = document.getElementById('progress-modal');
-    const termLog = document.getElementById('term-log');
-    const termFill = document.getElementById('term-fill');
-    
-    termLog.innerHTML = "";
-    termFill.style.width = "0%";
-    modal.classList.add('show');
-
-    let logIdx = 0;
-    const gameName = selectedGame === 'normal' ? 'com.dts.freefireth' : 'com.dts.freefiremax';
-    
-    const interval = setInterval(() => {
-      if (logIdx < terminalLogs.length) {
-        let line = terminalLogs[logIdx].replace('{GAME_NAME}', gameName);
-        termLog.innerHTML += `<div>${line}</div>`;
-        termLog.scrollTop = termLog.scrollHeight;
-        
-        // Âm thanh đánh chữ terminal
-        if(line.includes("root@")) playBeep(400, 'square', 0.1, 0.05);
-        else if(line.includes("[!]")) playBeep(900, 'sawtooth', 0.05, 0.05);
-        else playBeep(1200, 'sine', 0.02, 0.02);
-
-        // Progress bar tính dựa trên số dòng log
-        termFill.style.width = ((logIdx + 1) / terminalLogs.length * 100) + '%';
-        logIdx++;
-      } else {
-        clearInterval(interval);
-        playBeep(1500, 'sine', 0.1, 0.1);
-        playBeep(2000, 'sine', 0.2, 0.1); // Success sound
-        document.getElementById('term-status').textContent = 'DONE';
-        document.getElementById('term-status').style.color = 'var(--term-green)';
-        
-        setTimeout(() => {
-          modal.classList.remove('show');
-          btn.classList.remove('active');
-          btn.textContent = '> APPLY OPTIMIZATION';
-          showToast('TỐI ƯU ĐÃ ÁP DỤNG THÀNH CÔNG!');
-          document.getElementById('term-status').textContent = 'RUNNING';
-          document.getElementById('term-status').style.color = 'var(--text-muted)';
-        }, 1500);
-      }
-    }, 400); // Tốc độ chạy code
-  }
+})();
 </script>
 </body>
 </html>
