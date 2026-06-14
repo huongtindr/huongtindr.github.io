@@ -213,6 +213,28 @@
     .boost-btn:active { transform: scale(0.96); }
     .boost-btn.active { background: var(--accent); color: #fff; box-shadow: 0 0 30px var(--accent-glow); }
 
+    /* Community Buttons */
+    .community-section { padding: 24px 20px 0; }
+    .community-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; text-align: center; }
+    .community-links { display: flex; gap: 12px; }
+    .comm-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 10px; border-radius: 14px; border: 1px solid var(--border);
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+      cursor: pointer; text-decoration: none; transition: all 0.25s;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #fff;
+    }
+    .comm-btn:active { transform: scale(0.95); }
+    .comm-btn.zalo { border-color: rgba(0, 102, 255, 0.4); }
+    .comm-btn.zalo:hover, .comm-btn.zalo:active { background: rgba(0, 102, 255, 0.15); border-color: #0066ff; box-shadow: 0 0 15px rgba(0, 102, 255, 0.3); }
+    .comm-btn.telegram { border-color: rgba(0, 136, 204, 0.4); }
+    .comm-btn.telegram:hover, .comm-btn.telegram:active { background: rgba(0, 136, 204, 0.15); border-color: #0088cc; box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
+    .comm-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .comm-btn.zalo .comm-icon { background: #0066ff; }
+    .comm-btn.telegram .comm-icon { background: #0088cc; }
+    .comm-label { font-size: 11px; line-height: 1.3; }
+    .comm-label span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 400; }
+
     /* Terminal Modal */
     #progress-modal {
       display: none; position: fixed; inset: 0; z-index: 200;
@@ -398,9 +420,28 @@
     > APPLY OPTIMIZATION
   </button>
 
+  <!-- COMMUNITY LINKS -->
+  <div class="community-section">
+    <div class="community-title">Tham gia cộng đồng</div>
+    <div class="community-links">
+      <a href="https://zalo.me/g/ibyisiar5mlfgy5dwfh3" target="_blank" class="comm-btn zalo">
+        <div class="comm-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><text y="17" font-size="14" font-weight="bold" font-family="Arial">Z</text></svg>
+        </div>
+        <div class="comm-label">Nhóm Zalo<span>Hỗ trợ &amp; cập nhật</span></div>
+      </a>
+      <a href="https://t.me/duskiosvip" target="_blank" class="comm-btn telegram">
+        <div class="comm-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247l-2.035 9.586c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.46 14.607 4.5 13.71c-.65-.204-.663-.65.136-.961l10.89-4.198c.543-.194 1.018.131.836.696z"/></svg>
+        </div>
+        <div class="comm-label">Telegram VIP<span>Tin tức &amp; key mới</span></div>
+      </a>
+    </div>
+  </div>
+
   <footer style="text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;">
     HEADSYNC &copy; 2025<br/>
-    CẤM SAO CHÉP & PHÂN PHỐI TRÁI PHÉP
+    CẤM SAO CHÉP &amp; PHÂN PHỐI TRÁI PHÉP
   </footer>
 </div>
 
