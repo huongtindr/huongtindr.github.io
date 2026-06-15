@@ -447,62 +447,36 @@
     }
     #crosshair-overlay.active { display: block; }
     .crosshair-wrap {
-      position: absolute;
+      position: fixed;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
     }
-    /* outer ring */
-    .ch-ring {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(239,68,68,0.6);
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      animation: chPulse 2s ease-in-out infinite;
-    }
-    .ch-ring-1 { width: 44px; height: 44px; animation-delay: 0s; }
-    .ch-ring-2 { width: 60px; height: 60px; animation-delay: 0.5s; opacity: 0.4; }
-    @keyframes chPulse {
-      0%,100% { opacity: 0.8; transform: translate(-50%,-50%) scale(1); }
-      50%      { opacity: 0.3; transform: translate(-50%,-50%) scale(1.08); }
-    }
-    /* crosshair lines */
-    .ch-h, .ch-v {
+    /* 4 short lines with center gap */
+    .ch-line {
       position: absolute;
       background: var(--accent);
-      top: 50%; left: 50%;
+      border-radius: 2px;
     }
-    .ch-h {
-      width: 28px; height: 1.5px;
-      transform: translate(-50%,-50%);
-      box-shadow: 0 0 6px var(--accent-glow);
-    }
-    .ch-h::before, .ch-h::after {
-      content: '';
-      position: absolute;
-      top: 0; height: 100%;
-      width: 8px; background: transparent;
-    }
-    .ch-h::before { left: 0; border-right: 1.5px solid var(--accent); width: 10px; }
-    .ch-h::after  { right: 0; border-left: 1.5px solid var(--accent); width: 10px; }
-    .ch-v {
-      width: 1.5px; height: 28px;
-      transform: translate(-50%,-50%);
-      box-shadow: 0 0 6px var(--accent-glow);
-    }
+    /* horizontal left */
+    .ch-left  { width: 10px; height: 1.5px; top: 50%; left: 50%; transform: translate(calc(-50% - 8px), -50%); }
+    /* horizontal right */
+    .ch-right { width: 10px; height: 1.5px; top: 50%; left: 50%; transform: translate(calc(-50% + 8px), -50%); }
+    /* vertical top */
+    .ch-top   { width: 1.5px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 8px)); }
+    /* vertical bottom */
+    .ch-bot   { width: 1.5px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 8px)); }
     /* center dot */
     .ch-dot {
       position: absolute;
-      width: 4px; height: 4px; border-radius: 50%;
+      width: 3px; height: 3px; border-radius: 50%;
       background: var(--accent);
       top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      box-shadow: 0 0 8px var(--accent);
+      transform: translate(-50%, -50%);
     }
     /* drag handle */
     #crosshair-drag-handle {
       position: fixed;
-      width: 80px; height: 80px;
+      width: 60px; height: 60px;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
       z-index: 9001;
@@ -514,41 +488,40 @@
     /* crosshair settings mini bar */
     #ch-settings-bar {
       position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 80px);
+      bottom: calc(env(safe-area-inset-bottom) + 70px);
       left: 50%; transform: translateX(-50%);
       display: none;
       gap: 8px;
-      background: rgba(10,10,14,0.88);
-      border: 1px solid rgba(239,68,68,0.35);
+      background: rgba(10,10,14,0.9);
+      border: 1px solid rgba(239,68,68,0.3);
       border-radius: 40px;
-      padding: 8px 14px;
+      padding: 7px 12px;
       z-index: 9002;
       align-items: center;
       backdrop-filter: blur(12px);
-      box-shadow: 0 0 20px rgba(239,68,68,0.2);
       pointer-events: auto;
     }
     #ch-settings-bar.active { display: flex; }
     .ch-color-btn {
-      width: 22px; height: 22px; border-radius: 50%;
+      width: 18px; height: 18px; border-radius: 50%;
       border: 2px solid transparent; cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.15s;
     }
     .ch-color-btn.selected { border-color: #fff; transform: scale(1.2); }
+    .ch-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.12); }
     .ch-size-btn {
       font-family: 'Orbitron', sans-serif; font-size: 9px;
-      padding: 4px 8px; border-radius: 12px;
-      border: 1px solid rgba(239,68,68,0.4);
-      background: rgba(239,68,68,0.1);
-      color: var(--accent); cursor: pointer;
-      transition: all 0.2s;
+      padding: 3px 7px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s;
     }
-    .ch-size-btn.active { background: var(--accent); color: #fff; }
-    .ch-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.1); }
+    .ch-size-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .ch-close-btn {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4);
-      color: var(--accent); font-size: 12px; cursor: pointer;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-muted); font-size: 10px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -881,10 +854,10 @@
 <!-- ── VIRTUAL CROSSHAIR OVERLAY ── -->
 <div id="crosshair-overlay">
   <div class="crosshair-wrap" id="crosshair-wrap">
-    <div class="ch-ring ch-ring-1"></div>
-    <div class="ch-ring ch-ring-2"></div>
-    <div class="ch-h"></div>
-    <div class="ch-v"></div>
+    <div class="ch-line ch-left"></div>
+    <div class="ch-line ch-right"></div>
+    <div class="ch-line ch-top"></div>
+    <div class="ch-line ch-bot"></div>
     <div class="ch-dot"></div>
   </div>
 </div>
@@ -1431,34 +1404,13 @@ function timeAgo(date) {
    AUTO LAUNCH GAME
 ═══════════════════════════════════════════ */
 function launchGame() {
-  // iOS Universal Links / Deep links for Free Fire
-  const links = {
-    normal: [
-      'garena://open?game=freefireth',
-      'https://apps.apple.com/app/id1442263882'  // Free Fire App Store fallback
-    ],
-    max: [
-      'garena://open?game=freefiremax',
-      'https://apps.apple.com/app/id1556496418'  // Free Fire MAX App Store fallback
-    ]
+  const deepLinks = {
+    normal: 'freefireth://',
+    max:    'freefiremax://'
   };
-  const [deepLink, fallback] = links[selectedGame] || links['normal'];
+  const link = deepLinks[selectedGame] || deepLinks['normal'];
   showToast('ĐANG MỞ GAME...', 'success');
-
-  // Try deep link first; if browser can't handle it, fall back after 1.5s
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = deepLink;
-  document.body.appendChild(iframe);
-  setTimeout(() => { iframe.remove(); }, 500);
-
-  // Fallback: open App Store page
-  setTimeout(() => {
-    // Only open App Store if app didn't open (heuristic: page still visible)
-    if (!document.hidden) {
-      window.location.href = fallback;
-    }
-  }, 1500);
+  window.location.href = link;
 }
 
 /* ═══════════════════════════════════════════
@@ -1487,15 +1439,8 @@ function positionCrossHair() {
 }
 
 function applyChColor(color) {
-  document.documentElement.style.setProperty('--ch-active-color', color);
-  const glow = color + '88';
-  // Apply to crosshair elements
-  document.querySelectorAll('.ch-h, .ch-v, .ch-dot').forEach(el => {
+  document.querySelectorAll('.ch-line, .ch-dot').forEach(el => {
     el.style.background = color;
-    el.style.boxShadow  = `0 0 8px ${glow}`;
-  });
-  document.querySelectorAll('.ch-ring').forEach(el => {
-    el.style.borderColor = color + '99';
   });
 }
 
