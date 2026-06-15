@@ -442,63 +442,62 @@
     ═══════════════════════════════════════ */
     #crosshair-overlay {
       position: fixed; inset: 0; z-index: 9000;
-      pointer-events: none;
-      display: none;
+      pointer-events: none; display: none;
     }
     #crosshair-overlay.active { display: block; }
+    /* wrapper — positioned by JS */
     .crosshair-wrap {
       position: fixed;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
+      width: 32px; height: 32px;
     }
-    /* 4 short lines with center gap */
+    /* outer thin circle */
+    .ch-circle {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(239,68,68,0.55);
+    }
+    /* 4 short tick lines */
     .ch-line {
       position: absolute;
       background: var(--accent);
-      border-radius: 2px;
+      border-radius: 1px;
     }
-    /* horizontal left */
-    .ch-left  { width: 10px; height: 1.5px; top: 50%; left: 50%; transform: translate(calc(-50% - 8px), -50%); }
-    /* horizontal right */
-    .ch-right { width: 10px; height: 1.5px; top: 50%; left: 50%; transform: translate(calc(-50% + 8px), -50%); }
-    /* vertical top */
-    .ch-top   { width: 1.5px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 8px)); }
-    /* vertical bottom */
-    .ch-bot   { width: 1.5px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 8px)); }
+    .ch-left  { width: 6px; height: 1px; top: 50%; left: 50%; transform: translate(calc(-50% - 6px), -50%); }
+    .ch-right { width: 6px; height: 1px; top: 50%; left: 50%; transform: translate(calc(-50% + 6px), -50%); }
+    .ch-top   { width: 1px; height: 6px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 6px)); }
+    .ch-bot   { width: 1px; height: 6px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 6px)); }
     /* center dot */
     .ch-dot {
       position: absolute;
-      width: 3px; height: 3px; border-radius: 50%;
+      width: 2px; height: 2px; border-radius: 50%;
       background: var(--accent);
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
     }
-    /* drag handle */
+    /* drag handle — invisible touch area */
     #crosshair-drag-handle {
       position: fixed;
-      width: 60px; height: 60px;
+      width: 56px; height: 56px;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      z-index: 9001;
-      cursor: move;
-      display: none;
-      touch-action: none;
+      z-index: 9001; cursor: move;
+      display: none; touch-action: none;
     }
     #crosshair-drag-handle.active { display: block; }
-    /* crosshair settings mini bar */
+    /* settings mini bar */
     #ch-settings-bar {
       position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 70px);
+      bottom: calc(env(safe-area-inset-bottom) + 60px);
       left: 50%; transform: translateX(-50%);
-      display: none;
-      gap: 8px;
-      background: rgba(10,10,14,0.9);
-      border: 1px solid rgba(239,68,68,0.3);
-      border-radius: 40px;
-      padding: 7px 12px;
-      z-index: 9002;
-      align-items: center;
-      backdrop-filter: blur(12px);
+      display: none; gap: 7px;
+      background: rgba(8,8,10,0.92);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 40px; padding: 6px 11px;
+      z-index: 9002; align-items: center;
+      backdrop-filter: blur(14px);
       pointer-events: auto;
     }
     #ch-settings-bar.active { display: flex; }
@@ -718,11 +717,6 @@
         <div class="adv-label">Anti-Cheat Shield<span>Mask optimizer signature</span></div>
         <div class="toggle" id="toggle-anticheat" onclick="toggleAntiCheat()"></div>
       </div>
-      <div class="adv-divider"></div>
-      <div class="adv-row adv-toggle-row">
-        <div class="adv-label">Auto Launch Game<span>Mở game ngay sau tối ưu</span></div>
-        <div class="toggle" id="toggle-autolaunch" onclick="toggleAutoLaunch()"></div>
-      </div>
     </div>
   </div>
 
@@ -854,6 +848,7 @@
 <!-- ── VIRTUAL CROSSHAIR OVERLAY ── -->
 <div id="crosshair-overlay">
   <div class="crosshair-wrap" id="crosshair-wrap">
+    <div class="ch-circle" id="ch-circle"></div>
     <div class="ch-line ch-left"></div>
     <div class="ch-line ch-right"></div>
     <div class="ch-line ch-top"></div>
@@ -1302,10 +1297,8 @@ function startBoost(event) {
         document.getElementById('term-status').textContent = 'RUNNING';
         document.getElementById('term-status').style.color = 'var(--text-muted)';
         onBoostComplete();
-        // Auto-launch game if enabled
-        if (autoLaunchOn) {
-          setTimeout(() => launchGame(), 800);
-        }
+        // Auto-launch game always
+        setTimeout(() => launchGame(), 1000);
       }, 1200);
     }
   }, 350);
@@ -1409,8 +1402,19 @@ function launchGame() {
     max:    'freefiremax://'
   };
   const link = deepLinks[selectedGame] || deepLinks['normal'];
-  showToast('ĐANG MỞ GAME...', 'success');
+  const gameName = selectedGame === 'normal' ? 'Free Fire' : 'Free Fire MAX';
+  showToast('Đang mở ' + gameName + '...', 'success');
+
+  // Attempt to open via deep link
+  const t0 = Date.now();
   window.location.href = link;
+
+  // After 2s, if page is still visible the app likely didn't open
+  setTimeout(() => {
+    if (!document.hidden && (Date.now() - t0) < 3000) {
+      showToast(gameName + ' chưa được cài đặt!', 'error');
+    }
+  }, 2000);
 }
 
 /* ═══════════════════════════════════════════
@@ -1442,6 +1446,8 @@ function applyChColor(color) {
   document.querySelectorAll('.ch-line, .ch-dot').forEach(el => {
     el.style.background = color;
   });
+  const circle = document.getElementById('ch-circle');
+  if (circle) circle.style.borderColor = color + '88';
 }
 
 function applyChSize(size) {
