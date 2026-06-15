@@ -438,6 +438,121 @@
 
 
     /* ═══════════════════════════════════════
+       VIRTUAL CROSSHAIR OVERLAY
+    ═══════════════════════════════════════ */
+    #crosshair-overlay {
+      position: fixed; inset: 0; z-index: 9000;
+      pointer-events: none;
+      display: none;
+    }
+    #crosshair-overlay.active { display: block; }
+    .crosshair-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    /* outer ring */
+    .ch-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(239,68,68,0.6);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      animation: chPulse 2s ease-in-out infinite;
+    }
+    .ch-ring-1 { width: 44px; height: 44px; animation-delay: 0s; }
+    .ch-ring-2 { width: 60px; height: 60px; animation-delay: 0.5s; opacity: 0.4; }
+    @keyframes chPulse {
+      0%,100% { opacity: 0.8; transform: translate(-50%,-50%) scale(1); }
+      50%      { opacity: 0.3; transform: translate(-50%,-50%) scale(1.08); }
+    }
+    /* crosshair lines */
+    .ch-h, .ch-v {
+      position: absolute;
+      background: var(--accent);
+      top: 50%; left: 50%;
+    }
+    .ch-h {
+      width: 28px; height: 1.5px;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+    .ch-h::before, .ch-h::after {
+      content: '';
+      position: absolute;
+      top: 0; height: 100%;
+      width: 8px; background: transparent;
+    }
+    .ch-h::before { left: 0; border-right: 1.5px solid var(--accent); width: 10px; }
+    .ch-h::after  { right: 0; border-left: 1.5px solid var(--accent); width: 10px; }
+    .ch-v {
+      width: 1.5px; height: 28px;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+    /* center dot */
+    .ch-dot {
+      position: absolute;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--accent);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    /* drag handle */
+    #crosshair-drag-handle {
+      position: fixed;
+      width: 80px; height: 80px;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 9001;
+      cursor: move;
+      display: none;
+      touch-action: none;
+    }
+    #crosshair-drag-handle.active { display: block; }
+    /* crosshair settings mini bar */
+    #ch-settings-bar {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom) + 80px);
+      left: 50%; transform: translateX(-50%);
+      display: none;
+      gap: 8px;
+      background: rgba(10,10,14,0.88);
+      border: 1px solid rgba(239,68,68,0.35);
+      border-radius: 40px;
+      padding: 8px 14px;
+      z-index: 9002;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 20px rgba(239,68,68,0.2);
+      pointer-events: auto;
+    }
+    #ch-settings-bar.active { display: flex; }
+    .ch-color-btn {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid transparent; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ch-color-btn.selected { border-color: #fff; transform: scale(1.2); }
+    .ch-size-btn {
+      font-family: 'Orbitron', sans-serif; font-size: 9px;
+      padding: 4px 8px; border-radius: 12px;
+      border: 1px solid rgba(239,68,68,0.4);
+      background: rgba(239,68,68,0.1);
+      color: var(--accent); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ch-size-btn.active { background: var(--accent); color: #fff; }
+    .ch-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.1); }
+    .ch-close-btn {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4);
+      color: var(--accent); font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ═══════════════════════════════════════
        TOAST
     ═══════════════════════════════════════ */
     #toast {
@@ -630,6 +745,11 @@
         <div class="adv-label">Anti-Cheat Shield<span>Mask optimizer signature</span></div>
         <div class="toggle" id="toggle-anticheat" onclick="toggleAntiCheat()"></div>
       </div>
+      <div class="adv-divider"></div>
+      <div class="adv-row adv-toggle-row">
+        <div class="adv-label">Auto Launch Game<span>Mở game ngay sau tối ưu</span></div>
+        <div class="toggle" id="toggle-autolaunch" onclick="toggleAutoLaunch()"></div>
+      </div>
     </div>
   </div>
 
@@ -680,6 +800,24 @@
           <div class="card-desc">Reroute Garena servers, block ghost ping spikes.</div>
         </div>
         <div class="toggle" id="toggle-reg"></div>
+      </div>
+
+      <div class="card" id="card-crosshair" onclick="toggleFeature('crosshair')">
+        <div class="card-icon-feat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <line x1="12" y1="1" x2="12" y2="5"></line>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="1" y1="12" x2="5" y2="12"></line>
+            <line x1="19" y1="12" x2="23" y2="12"></line>
+            <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Tâm Ảo <span style="font-size:9px;color:var(--accent);font-family:'Orbitron',monospace;margin-left:4px">VIRTUAL AIM</span></div>
+          <div class="card-desc">Hiển thị tâm ngắm ảo giữa màn hình — kéo để di chuyển, tuỳ chỉnh màu &amp; kích thước.</div>
+        </div>
+        <div class="toggle" id="toggle-crosshair"></div>
       </div>
 
     </div>
@@ -739,6 +877,31 @@
   </div>
 </div>
 
+
+<!-- ── VIRTUAL CROSSHAIR OVERLAY ── -->
+<div id="crosshair-overlay">
+  <div class="crosshair-wrap" id="crosshair-wrap">
+    <div class="ch-ring ch-ring-1"></div>
+    <div class="ch-ring ch-ring-2"></div>
+    <div class="ch-h"></div>
+    <div class="ch-v"></div>
+    <div class="ch-dot"></div>
+  </div>
+</div>
+<div id="crosshair-drag-handle"></div>
+<div id="ch-settings-bar">
+  <div class="ch-color-btn selected" style="background:#ef4444" data-color="#ef4444" onclick="setCrossHairColor(this)"></div>
+  <div class="ch-color-btn" style="background:#22c55e" data-color="#22c55e" onclick="setCrossHairColor(this)"></div>
+  <div class="ch-color-btn" style="background:#fff" data-color="#fff" onclick="setCrossHairColor(this)"></div>
+  <div class="ch-color-btn" style="background:#f59e0b" data-color="#f59e0b" onclick="setCrossHairColor(this)"></div>
+  <div class="ch-color-btn" style="background:#a78bfa" data-color="#a78bfa" onclick="setCrossHairColor(this)"></div>
+  <div class="ch-sep"></div>
+  <button class="ch-size-btn active" onclick="setCrossHairSize('sm',this)">S</button>
+  <button class="ch-size-btn" onclick="setCrossHairSize('md',this)">M</button>
+  <button class="ch-size-btn" onclick="setCrossHairSize('lg',this)">L</button>
+  <div class="ch-sep"></div>
+  <div class="ch-close-btn" onclick="closeCrossHairSettings()">✕</div>
+</div>
 
 <!-- ── TOAST ── -->
 <div id="toast">
@@ -842,12 +1005,19 @@ const HEADERS = {
 let HWID = "UNKNOWN_DEVICE";
 FingerprintJS.load().then(fp => fp.get()).then(r => { HWID = r.visitorId; });
 
-const states = { boost: false, aim: false, vibrate: false, reg: false };
-let selectedGame = 'normal';
-let selectedFps  = 90;
-let selectedGfx  = 'low';
-let antiCheatOn  = false;
-let baselinePing = 48;
+const states = { boost: false, aim: false, vibrate: false, reg: false, crosshair: false };
+let selectedGame    = 'normal';
+let selectedFps     = 90;
+let selectedGfx     = 'low';
+let antiCheatOn     = false;
+let autoLaunchOn    = false;
+let baselinePing    = 48;
+
+// Crosshair state
+let chColor  = localStorage.getItem('hs_ch_color') || '#ef4444';
+let chSize   = localStorage.getItem('hs_ch_size')  || 'sm';
+let chX      = parseFloat(localStorage.getItem('hs_ch_x') || 50);  // % from left
+let chY      = parseFloat(localStorage.getItem('hs_ch_y') || 50);  // % from top
 
 // Restore last boost time
 const lastBoostRaw = localStorage.getItem('hs_last_boost');
@@ -1007,6 +1177,16 @@ function toggleAntiCheat() {
   showToast(antiCheatOn ? 'ANTI-CHEAT SHIELD: ON' : 'ANTI-CHEAT SHIELD: OFF', antiCheatOn ? 'success' : 'info');
 }
 
+function toggleAutoLaunch() {
+  initAudio();
+  autoLaunchOn = !autoLaunchOn;
+  const t = document.getElementById('toggle-autolaunch');
+  t.classList.toggle('on', autoLaunchOn);
+  playBeep(autoLaunchOn ? 900 : 600, 'square', 0.05, 0.03);
+  if (navigator.vibrate) navigator.vibrate(autoLaunchOn ? 50 : 30);
+  showToast(autoLaunchOn ? 'AUTO LAUNCH: BẬT' : 'AUTO LAUNCH: TẮT', autoLaunchOn ? 'success' : 'info');
+}
+
 function selectGame(game) {
   initAudio(); playBeep(800, 'square', 0.05, 0.03);
   selectedGame = game;
@@ -1025,6 +1205,19 @@ function toggleFeature(key) {
   document.getElementById('card-' + key).classList.toggle('enabled', on);
   playBeep(on ? 1000 : 700, 'square', 0.05, 0.03);
   if (navigator.vibrate) navigator.vibrate(on ? 50 : 25);
+
+  // Handle crosshair special case
+  if (key === 'crosshair') {
+    if (on) {
+      activateCrossHair();
+      showToast('TÂM ẢO: BẬT — Kéo để di chuyển', 'success');
+    } else {
+      deactivateCrossHair();
+      showToast('TÂM ẢO: TẮT', 'info');
+    }
+    return;
+  }
+
   showToast(
     on ? key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': ENABLED'
        : key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': DISABLED',
@@ -1136,6 +1329,10 @@ function startBoost(event) {
         document.getElementById('term-status').textContent = 'RUNNING';
         document.getElementById('term-status').style.color = 'var(--text-muted)';
         onBoostComplete();
+        // Auto-launch game if enabled
+        if (autoLaunchOn) {
+          setTimeout(() => launchGame(), 800);
+        }
       }, 1200);
     }
   }, 350);
@@ -1229,6 +1426,169 @@ function timeAgo(date) {
     if (btn) { document.querySelectorAll('#gfx-group .pill-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedGfx = savedGfx; }
   }
 })();
+
+/* ═══════════════════════════════════════════
+   AUTO LAUNCH GAME
+═══════════════════════════════════════════ */
+function launchGame() {
+  // iOS Universal Links / Deep links for Free Fire
+  const links = {
+    normal: [
+      'garena://open?game=freefireth',
+      'https://apps.apple.com/app/id1442263882'  // Free Fire App Store fallback
+    ],
+    max: [
+      'garena://open?game=freefiremax',
+      'https://apps.apple.com/app/id1556496418'  // Free Fire MAX App Store fallback
+    ]
+  };
+  const [deepLink, fallback] = links[selectedGame] || links['normal'];
+  showToast('ĐANG MỞ GAME...', 'success');
+
+  // Try deep link first; if browser can't handle it, fall back after 1.5s
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = deepLink;
+  document.body.appendChild(iframe);
+  setTimeout(() => { iframe.remove(); }, 500);
+
+  // Fallback: open App Store page
+  setTimeout(() => {
+    // Only open App Store if app didn't open (heuristic: page still visible)
+    if (!document.hidden) {
+      window.location.href = fallback;
+    }
+  }, 1500);
+}
+
+/* ═══════════════════════════════════════════
+   VIRTUAL CROSSHAIR
+═══════════════════════════════════════════ */
+(function initCrossHairFromStorage() {
+  if (localStorage.getItem('hs_crosshair') === '1') {
+    // Don't auto-activate on load — user must toggle
+  }
+  applyChColor(chColor);
+  applyChSize(chSize);
+  positionCrossHair();
+})();
+
+function positionCrossHair() {
+  const wrap   = document.getElementById('crosshair-wrap');
+  const handle = document.getElementById('crosshair-drag-handle');
+  const x = chX; const y = chY;
+  wrap.style.position   = 'fixed';
+  wrap.style.top        = y + '%';
+  wrap.style.left       = x + '%';
+  wrap.style.transform  = 'translate(-50%, -50%)';
+  handle.style.top      = y + '%';
+  handle.style.left     = x + '%';
+  handle.style.transform = 'translate(-50%, -50%)';
+}
+
+function applyChColor(color) {
+  document.documentElement.style.setProperty('--ch-active-color', color);
+  const glow = color + '88';
+  // Apply to crosshair elements
+  document.querySelectorAll('.ch-h, .ch-v, .ch-dot').forEach(el => {
+    el.style.background = color;
+    el.style.boxShadow  = `0 0 8px ${glow}`;
+  });
+  document.querySelectorAll('.ch-ring').forEach(el => {
+    el.style.borderColor = color + '99';
+  });
+}
+
+function applyChSize(size) {
+  const wrap = document.getElementById('crosshair-wrap');
+  const scales = { sm: 1, md: 1.5, lg: 2 };
+  const scale  = scales[size] || 1;
+  wrap.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
+function activateCrossHair() {
+  const overlay = document.getElementById('crosshair-overlay');
+  const handle  = document.getElementById('crosshair-drag-handle');
+  const bar     = document.getElementById('ch-settings-bar');
+  overlay.classList.add('active');
+  handle.classList.add('active');
+  bar.classList.add('active');
+  positionCrossHair();
+  applyChColor(chColor);
+  applyChSize(chSize);
+  localStorage.setItem('hs_crosshair', '1');
+  initCrossHairDrag();
+}
+
+function deactivateCrossHair() {
+  document.getElementById('crosshair-overlay').classList.remove('active');
+  document.getElementById('crosshair-drag-handle').classList.remove('active');
+  document.getElementById('ch-settings-bar').classList.remove('active');
+  localStorage.setItem('hs_crosshair', '0');
+}
+
+function closeCrossHairSettings() {
+  document.getElementById('ch-settings-bar').classList.remove('active');
+}
+
+function setCrossHairColor(btn) {
+  chColor = btn.dataset.color;
+  document.querySelectorAll('.ch-color-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  applyChColor(chColor);
+  localStorage.setItem('hs_ch_color', chColor);
+  playBeep(900, 'sine', 0.03, 0.02);
+}
+
+function setCrossHairSize(size, btn) {
+  chSize = size;
+  document.querySelectorAll('.ch-size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyChSize(chSize);
+  localStorage.setItem('hs_ch_size', chSize);
+  playBeep(900, 'sine', 0.03, 0.02);
+}
+
+function initCrossHairDrag() {
+  const handle = document.getElementById('crosshair-drag-handle');
+  let dragging = false, startX, startY, startChX, startChY;
+
+  function onStart(e) {
+    dragging = true;
+    const pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY;
+    startChX = chX; startChY = chY;
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const pt = e.touches ? e.touches[0] : e;
+    const dx = ((pt.clientX - startX) / window.innerWidth)  * 100;
+    const dy = ((pt.clientY - startY) / window.innerHeight) * 100;
+    chX = Math.min(90, Math.max(10, startChX + dx));
+    chY = Math.min(90, Math.max(10, startChY + dy));
+    positionCrossHair();
+    e.preventDefault();
+  }
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    localStorage.setItem('hs_ch_x', chX);
+    localStorage.setItem('hs_ch_y', chY);
+    // Show settings bar when drag ends
+    document.getElementById('ch-settings-bar').classList.add('active');
+  }
+
+  // Remove old listeners by cloning node
+  const newHandle = handle.cloneNode(true);
+  handle.parentNode.replaceChild(newHandle, handle);
+  newHandle.addEventListener('touchstart', onStart, { passive: false });
+  newHandle.addEventListener('touchmove',  onMove,  { passive: false });
+  newHandle.addEventListener('touchend',   onEnd);
+  newHandle.addEventListener('mousedown',  onStart);
+  document.addEventListener('mousemove',   onMove);
+  document.addEventListener('mouseup',     onEnd);
+}
 </script>
 </body>
 </html>
