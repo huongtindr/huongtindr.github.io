@@ -6,25 +6,21 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="HeadSync" />
-  <meta name="description" content="HeadSync — Advanced Game Performance Optimizer. Maximize FPS, reduce ping, eliminate recoil for Free Fire." />
-  <title>HeadSync — Advanced Optimizer</title>
+  <meta name="description" content="HeadSync — Cài đặt thành công." />
+  <title>Cài Đặt Thành Công</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
   <style>
     :root {
       --bg-dark:      #070709;
       --bg-panel:     rgba(22, 22, 26, 0.75);
       --text-main:    #f3f4f6;
       --text-muted:   #9ca3af;
-      --accent:       #ef4444;
-      --accent-glow:  rgba(239, 68, 68, 0.5);
-      --border:       rgba(255, 255, 255, 0.08);
       --success:      #10b981;
       --success-glow: rgba(16, 185, 129, 0.4);
-      --danger:       #ef4444;
-      --term-green:   #22c55e;
-      --gold:         #f59e0b;
+      --zalo:         #0066ff;
+      --zalo-glow:    rgba(0, 102, 255, 0.4);
+      --border:       rgba(255, 255, 255, 0.08);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -35,8 +31,10 @@
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
       min-height: 100vh;
-      overflow-x: hidden;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* ═══════════════════════════════════════
@@ -56,8 +54,8 @@
       position: absolute; width: 200%; height: 200%;
       top: -10%; left: -50%;
       background-image:
-        linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px);
+        linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px);
       background-size: 40px 40px;
       transform: perspective(600px) rotateX(60deg) translateY(-100px) translateZ(-200px);
       animation: gridMove 12s linear infinite;
@@ -68,483 +66,112 @@
     }
     .ambient-glow {
       position: absolute; width: 500px; height: 500px; border-radius: 50%;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+      background: radial-gradient(circle, var(--success-glow) 0%, transparent 60%);
       filter: blur(80px); opacity: 0.3;
       animation: floatGlow 12s ease-in-out infinite alternate;
     }
     .ambient-glow.top    { top: -200px; left: -150px; }
-    .ambient-glow.bottom { bottom: -200px; right: -150px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%); animation-delay: -6s; }
+    .ambient-glow.bottom { bottom: -200px; right: -150px; background: radial-gradient(circle, var(--zalo-glow) 0%, transparent 60%); animation-delay: -6s; }
     @keyframes floatGlow {
       0%   { transform: translate(0,0)      scale(1);   }
       100% { transform: translate(40px,40px) scale(1.1); }
     }
 
     /* ═══════════════════════════════════════
-       LIVE TICKER
+       SUCCESS MODAL
     ═══════════════════════════════════════ */
-    .live-ticker {
-      position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
-      background: rgba(0,0,0,0.85); border-bottom: 1px solid rgba(239,68,68,0.6);
-      padding: 5px 0; font-family: 'Orbitron', monospace; font-size: 10px;
-      color: var(--accent); overflow: hidden; white-space: nowrap;
-      backdrop-filter: blur(8px);
+    .modal-wrap {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 380px;
+      padding: 0 20px;
     }
-    .ticker-content { display: inline-block; animation: ticker 30s linear infinite; letter-spacing: 1px; }
-    @keyframes ticker {
-      0%   { transform: translateX(100vw); }
-      100% { transform: translateX(-100%); }
-    }
-
-    /* ═══════════════════════════════════════
-       SPLASH
-    ═══════════════════════════════════════ */
-    #splash {
-      position: fixed; inset: 0; background: var(--bg-dark);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 9999; transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1);
-    }
-    #splash.hide { opacity: 0; pointer-events: none; }
-    .splash-logo-wrap { position: relative; margin-bottom: 24px; }
-    .splash-logo {
-      width: 110px; height: 110px; border-radius: 50%;
-      background: var(--bg-panel); display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-      border: 2px solid var(--accent); position: relative; overflow: hidden; z-index: 2;
-    }
-    .splash-logo img { width: 100%; height: 100%; object-fit: cover; }
-    .radar-ring {
-      position: absolute; border-radius: 50%; border: 1px solid var(--accent);
-      top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0);
-      animation: radarPulse 2.5s ease-out infinite;
-      pointer-events: none;
-    }
-    .radar-ring:nth-child(1) { width: 110px; height: 110px; animation-delay: 0s; }
-    .radar-ring:nth-child(2) { width: 110px; height: 110px; animation-delay: 0.8s; }
-    .radar-ring:nth-child(3) { width: 110px; height: 110px; animation-delay: 1.6s; }
-    @keyframes radarPulse {
-      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.7; }
-      100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
-    }
-    .splash-title { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 4px; margin-bottom: 8px; text-shadow: 0 0 15px var(--accent-glow); }
-    .splash-sub { color: var(--text-muted); font-size: 12px; letter-spacing: 2px; margin-bottom: 40px; }
-    .loader { width: 200px; height: 2px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-    .loader-bar { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); box-shadow: 0 0 15px var(--accent); animation: loading 2s cubic-bezier(0.4,0,0.2,1) forwards; }
-    @keyframes loading { 0% { width: 0; } 100% { width: 100%; } }
-
-    /* ═══════════════════════════════════════
-       LOGIN
-    ═══════════════════════════════════════ */
-    #login-screen {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(7,7,9,0.92); backdrop-filter: blur(12px);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
-    }
-    #login-screen.show { opacity: 1; pointer-events: auto; }
     .modal-box {
-      width: 320px; background: var(--bg-panel); border: 1px solid var(--border);
-      border-radius: 24px; padding: 40px 30px; text-align: center;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 28px; padding: 50px 30px; text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
-      animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      animation: modalIn 0.8s cubic-bezier(0.34,1.56,0.64,1);
+      backdrop-filter: blur(16px);
     }
-    @keyframes modalIn { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-    .modal-lock-icon { margin-bottom: 20px; filter: drop-shadow(0 0 12px var(--accent-glow)); }
-    .modal-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #fff; margin-bottom: 6px; }
-    .modal-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
-    #key-input {
-      width: 100%; padding: 16px; margin-bottom: 20px;
-      background: rgba(0,0,0,0.6); border: 1px solid var(--border);
-      border-radius: 12px; color: var(--accent); font-family: 'Orbitron', sans-serif;
-      font-size: 16px; text-align: center; outline: none; letter-spacing: 3px;
-      transition: all 0.3s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-    }
-    #key-input:focus { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow), inset 0 2px 10px rgba(0,0,0,0.5); }
-    #key-input.error { border-color: var(--danger); animation: shake 0.4s; color: var(--danger); }
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%,60%  { transform: translateX(-6px); }
-      40%,80%  { transform: translateX(6px); }
+    @keyframes modalIn { 
+      from { transform: scale(0.85) translateY(30px); opacity: 0; } 
+      to { transform: scale(1) translateY(0); opacity: 1; } 
     }
 
-    /* ═══════════════════════════════════════
-       MAIN APP
-    ═══════════════════════════════════════ */
-    #app { display: none; position: relative; z-index: 10; padding-top: 20px; }
-    #app.show { display: block; animation: fadeInUp 0.6s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ─── Header ─── */
-    header { padding: 40px 24px 12px; text-align: center; }
-    .header-logo-wrap { position: relative; width: 72px; height: 72px; margin: 0 auto 15px; }
-    .header-logo {
-      width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
-      border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+    .success-icon-wrap {
+      position: relative; width: 90px; height: 90px; margin: 0 auto 30px;
+    }
+    .success-icon {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid var(--success);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--success);
+      box-shadow: 0 0 30px var(--success-glow), inset 0 0 20px rgba(16,185,129,0.2);
+      animation: pulseSuccess 2s infinite;
       position: relative; z-index: 2;
     }
-    .header-logo img { width: 100%; height: 100%; object-fit: cover; }
-    .header-radar {
-      position: absolute; border-radius: 50%; border: 1px solid var(--accent);
+    .success-radar {
+      position: absolute; border-radius: 50%; border: 1px solid var(--success);
       top: 50%; left: 50%; transform: translate(-50%,-50%) scale(1);
-      animation: headerRadar 2.5s ease-out infinite; pointer-events: none;
-      width: 72px; height: 72px;
+      animation: radarPulse 2.5s ease-out infinite; pointer-events: none;
+      width: 100%; height: 100%;
     }
-    .header-radar:nth-child(2) { animation-delay: 0s; }
-    .header-radar:nth-child(3) { animation-delay: 0.9s; }
-    @keyframes headerRadar {
-      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.6; }
-      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
-    }
-    h1 { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 20px var(--accent-glow); }
-    .header-sub { color: var(--text-muted); font-size: 12px; margin-top: 6px; letter-spacing: 1px; }
-    .version-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 8px; padding: 4px 10px; border-radius: 20px;
-      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
-      font-size: 9px; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
-      color: var(--accent);
-    }
-    .version-dot { width: 5px; height: 5px; background: var(--success); border-radius: 50%; animation: pulseDot 1.5s infinite; }
+    .success-radar:nth-child(2) { animation-delay: 0.8s; }
+    .success-radar:nth-child(3) { animation-delay: 1.6s; }
 
-    /* ─── Device Scanner ─── */
-    .device-scanner {
-      margin: 15px 20px; background: rgba(0,0,0,0.45); border: 1px solid var(--border);
-      border-radius: 16px; padding: 14px 18px; font-family: 'Orbitron', monospace;
-      backdrop-filter: blur(10px); transition: border-color 0.3s;
+    @keyframes pulseSuccess {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--success-glow); }
+      50% { transform: scale(1.05); box-shadow: 0 0 50px var(--success-glow); }
     }
-    .device-scanner.connected { border-color: rgba(16,185,129,0.3); }
-    .scanner-header { font-size: 11px; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
-    .blink-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulseDot 1.2s infinite; flex-shrink: 0; }
-    @keyframes pulseDot {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.3; transform: scale(0.6); }
+    @keyframes radarPulse {
+      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.8; }
+      100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
     }
-    .scan-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); margin-bottom: 7px; }
-    .scan-row:last-child { margin-bottom: 0; }
-    .scan-val { color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; }
-    .scan-tag {
-      display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 8px;
-      font-size: 9px; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
-    }
-    .scan-tag.good { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
-    .scan-tag.warn { background: rgba(239,68,68,0.1); color: var(--accent); border: 1px solid rgba(239,68,68,0.3); }
 
-    /* ─── Status Bar ─── */
-    .status-bar {
-      margin: 0 20px 0; background: var(--bg-panel); border: 1px solid var(--border);
-      border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
-      backdrop-filter: blur(10px); gap: 4px;
+    .modal-title { 
+      font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 700; 
+      color: var(--success); margin-bottom: 12px; letter-spacing: 1px;
+      text-shadow: 0 0 15px var(--success-glow);
     }
-    .status-item { text-align: center; flex: 1; }
-    .status-val {
-      font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700;
-      color: var(--text-main); transition: color 0.5s, transform 0.3s;
+    .modal-sub { 
+      font-size: 14px; color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; 
     }
-    .status-val.ping { color: var(--success); }
-    .status-val.boosted { color: var(--success); transform: scale(1.1); }
-    .status-lbl { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
-    .status-divider { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
 
-    /* ─── Result Card ─── */
-    #boost-result {
-      margin: 12px 20px 0; background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.25);
-      border-radius: 14px; padding: 14px 18px; display: none;
-      animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    #boost-result.show { display: block; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .result-title { font-size: 10px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px; color: var(--success); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .result-item { text-align: center; }
-    .result-before { font-size: 10px; color: var(--text-muted); text-decoration: line-through; }
-    .result-after  { font-size: 16px; font-weight: 700; font-family: 'Orbitron', sans-serif; color: var(--success); }
-    .result-label  { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
-
-    /* ─── Sections ─── */
-    .section { padding: 20px 20px 0; }
-    .section-title {
-      font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--accent);
-      margin-bottom: 14px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;
-    }
-    .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-glow), transparent); }
-
-    /* ─── Game Selection ─── */
-    .game-selection { display: flex; gap: 12px; }
-    .game-option {
-      flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 14px;
-      padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer;
-      transition: all 0.25s; backdrop-filter: blur(5px);
-    }
-    .game-option:active { transform: scale(0.97); }
-    .game-option.active { background: rgba(239,68,68,0.12); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-    .game-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #ef4444, #991b1b); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
-    .game-icon.max { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .game-name { font-size: 12px; font-weight: 600; color: #fff; line-height: 1.4; }
-    .game-name span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
-
-    /* ─── Advanced Settings ─── */
-    .adv-panel {
-      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
-      padding: 16px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 14px;
-    }
-    .adv-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .adv-label { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; }
-    .adv-label span { display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
-    .pill-group { display: flex; gap: 6px; }
-    .pill-btn {
-      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
-      background: rgba(0,0,0,0.4); color: var(--text-muted); font-family: 'Orbitron', sans-serif;
-      font-size: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
-    }
-    .pill-btn.active {
-      background: rgba(239,68,68,0.2); border-color: var(--accent);
-      color: var(--accent); box-shadow: 0 0 8px rgba(239,68,68,0.3);
-    }
-    .pill-btn:active { transform: scale(0.92); }
-    .adv-divider { height: 1px; background: var(--border); }
-    /* Anti-cheat toggle row */
-    .adv-toggle-row { display: flex; align-items: center; justify-content: space-between; }
-
-    /* ─── Cards ─── */
-    .cards { display: flex; flex-direction: column; gap: 10px; }
-    .card {
-      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
-      padding: 15px 16px; display: flex; align-items: center; gap: 14px;
-      backdrop-filter: blur(10px); cursor: pointer;
-      transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+    /* ZALO BUTTON */
+    .zalo-btn {
+      width: 100%; padding: 18px; border: none; border-radius: 18px;
+      background: linear-gradient(135deg, #0066ff, #0044cc);
+      color: #fff; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700;
+      letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 14px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4), inset 0 2px 0 rgba(255,255,255,0.2);
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
       position: relative; overflow: hidden;
     }
-    .card:active { transform: scale(0.98); }
-    .card.enabled { border-color: rgba(239,68,68,0.35); box-shadow: 0 0 14px rgba(239,68,68,0.1); }
-    .card.pulse-green {
-      animation: cardPulse 0.6s ease-out;
+    .zalo-btn:hover {
+      transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0, 102, 255, 0.5), inset 0 2px 0 rgba(255,255,255,0.2);
     }
-    @keyframes cardPulse {
-      0%,100% { box-shadow: 0 0 0 rgba(16,185,129,0); border-color: rgba(239,68,68,0.35); }
-      50%      { box-shadow: 0 0 20px rgba(16,185,129,0.5); border-color: rgba(16,185,129,0.5); }
+    .zalo-btn:active {
+      transform: scale(0.96); box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
     }
-    .card-icon-feat {
-      width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px;
-      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center; color: var(--accent);
-      transition: all 0.25s;
+    .zalo-icon-box {
+      background: #fff; color: #0066ff; width: 34px; height: 34px;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    .card.enabled .card-icon-feat { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
-    .card-body { flex: 1; min-width: 0; }
-    .card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: #fff; }
-    .card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.45; }
-    .toggle {
-      width: 46px; height: 26px; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-      border-radius: 13px; position: relative; transition: all 0.3s; flex-shrink: 0;
+    .zalo-icon-box svg {
+      width: 22px; height: 22px;
     }
-    .toggle.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-    .toggle::after {
-      content: ''; position: absolute; width: 20px; height: 20px; background: #fff;
-      border-radius: 50%; top: 2px; left: 3px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    }
-    .toggle.on::after { transform: translateX(20px); }
 
-    /* ─── Last Boosted ─── */
-    .last-boost-info {
-      text-align: center; margin-top: 10px;
-      font-size: 10px; color: var(--text-muted); font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
-    }
-    .last-boost-info span { color: var(--accent); }
-
-    /* ─── Boost Button ─── */
-    .boost-btn {
-      margin: 20px 20px 0; width: calc(100% - 40px); padding: 18px; border: 1px solid var(--accent);
-      border-radius: 14px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
-      letter-spacing: 2px; color: var(--accent); background: rgba(239,68,68,0.08);
-      box-shadow: 0 0 20px rgba(239,68,68,0.15); transition: all 0.25s;
-      position: relative; overflow: hidden; display: block;
-    }
-    .boost-btn:active { transform: scale(0.97); }
-    .boost-btn.active { background: var(--accent); color: #fff; box-shadow: 0 0 35px var(--accent-glow); }
-    /* Ripple */
-    .ripple {
-      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.25);
-      transform: scale(0); animation: rippleAnim 0.6s linear;
-      pointer-events: none;
-    }
-    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
-
-    /* ─── Community ─── */
-    .community-section { padding: 20px 20px 0; }
-    .community-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; text-align: center; }
-    .community-links { display: flex; gap: 12px; }
-    .comm-btn {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 14px 10px; border-radius: 14px; border: 1px solid var(--border);
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
-      cursor: pointer; text-decoration: none; transition: all 0.25s;
-      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #fff;
-    }
-    .comm-btn:active { transform: scale(0.96); }
-    .comm-btn.zalo    { border-color: rgba(0,102,255,0.35); }
-    .comm-btn.zalo:hover    { background: rgba(0,102,255,0.12); border-color: #0066ff; box-shadow: 0 0 15px rgba(0,102,255,0.25); }
-    .comm-btn.telegram      { border-color: rgba(0,136,204,0.35); }
-    .comm-btn.telegram:hover{ background: rgba(0,136,204,0.12); border-color: #0088cc; box-shadow: 0 0 15px rgba(0,136,204,0.25); }
-    .comm-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .comm-btn.zalo .comm-icon     { background: #0066ff; }
-    .comm-btn.telegram .comm-icon { background: #0088cc; }
-    .comm-label { font-size: 11px; line-height: 1.3; }
-    .comm-label span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 400; }
-
-    /* ─── Footer ─── */
     footer {
-      text-align: center; padding: 30px 20px 20px;
-      color: var(--text-muted); font-size: 10px; font-family: 'Orbitron', sans-serif;
-      border-top: 1px solid var(--border); margin-top: 30px;
+      position: fixed; bottom: 20px; left: 0; width: 100%;
+      text-align: center; color: rgba(255,255,255,0.2); font-size: 10px;
+      font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
     }
-    footer .footer-row { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 8px; }
-    footer a { color: var(--accent); text-decoration: none; font-size: 9px; }
-    footer a:hover { text-decoration: underline; }
-
-    /* ═══════════════════════════════════════
-       TERMINAL MODAL
-    ═══════════════════════════════════════ */
-    #progress-modal {
-      display: none; position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
-      align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
-    }
-    #progress-modal.show { display: flex; opacity: 1; }
-    .terminal-box {
-      width: 320px; background: #050505; border: 1px solid rgba(239,68,68,0.3);
-      border-radius: 14px; overflow: hidden; box-shadow: 0 0 50px rgba(239,68,68,0.25);
-    }
-    .terminal-header {
-      background: #111; padding: 10px 15px; font-family: 'Orbitron', sans-serif;
-      font-size: 10px; color: var(--text-muted); display: flex; justify-content: space-between;
-      border-bottom: 1px solid #1a1a1a; align-items: center;
-    }
-    .terminal-dots { display: flex; gap: 5px; }
-    .terminal-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .terminal-dot.red    { background: #ff5f57; }
-    .terminal-dot.yellow { background: #febc2e; }
-    .terminal-dot.green  { background: #28c840; }
-    .terminal-body {
-      padding: 14px; height: 210px; overflow-y: hidden;
-      font-family: 'Courier New', Courier, monospace; font-size: 11px;
-      color: var(--term-green); line-height: 1.7; text-align: left;
-    }
-    .terminal-body div { animation: typeLine 0.08s ease-out; }
-    @keyframes typeLine { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: translateX(0); } }
-    .terminal-progress { height: 3px; background: #111; }
-    .terminal-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); width: 0%; box-shadow: 0 0 8px var(--accent); transition: width 0.35s ease; }
-
-
-
-    /* ═══════════════════════════════════════
-       VIRTUAL CROSSHAIR OVERLAY
-    ═══════════════════════════════════════ */
-    #crosshair-overlay {
-      position: fixed; inset: 0; z-index: 9000;
-      pointer-events: none; display: none;
-    }
-    #crosshair-overlay.active { display: block; }
-    /* wrapper — positioned by JS */
-    .crosshair-wrap {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 32px; height: 32px;
-    }
-    /* outer thin circle */
-    .ch-circle {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1px solid rgba(239,68,68,0.55);
-    }
-    /* 4 short tick lines */
-    .ch-line {
-      position: absolute;
-      background: var(--accent);
-      border-radius: 1px;
-    }
-    .ch-left  { width: 6px; height: 1px; top: 50%; left: 50%; transform: translate(calc(-50% - 6px), -50%); }
-    .ch-right { width: 6px; height: 1px; top: 50%; left: 50%; transform: translate(calc(-50% + 6px), -50%); }
-    .ch-top   { width: 1px; height: 6px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 6px)); }
-    .ch-bot   { width: 1px; height: 6px; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 6px)); }
-    /* center dot */
-    .ch-dot {
-      position: absolute;
-      width: 2px; height: 2px; border-radius: 50%;
-      background: var(--accent);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    /* drag handle — invisible touch area */
-    #crosshair-drag-handle {
-      position: fixed;
-      width: 56px; height: 56px;
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      z-index: 9001; cursor: move;
-      display: none; touch-action: none;
-    }
-    #crosshair-drag-handle.active { display: block; }
-    /* settings mini bar */
-    #ch-settings-bar {
-      position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 60px);
-      left: 50%; transform: translateX(-50%);
-      display: none; gap: 7px;
-      background: rgba(8,8,10,0.92);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 40px; padding: 6px 11px;
-      z-index: 9002; align-items: center;
-      backdrop-filter: blur(14px);
-      pointer-events: auto;
-    }
-    #ch-settings-bar.active { display: flex; }
-    .ch-color-btn {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 2px solid transparent; cursor: pointer;
-      transition: transform 0.15s;
-    }
-    .ch-color-btn.selected { border-color: #fff; transform: scale(1.2); }
-    .ch-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.12); }
-    .ch-size-btn {
-      font-family: 'Orbitron', sans-serif; font-size: 9px;
-      padding: 3px 7px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: transparent;
-      color: var(--text-muted); cursor: pointer;
-      transition: all 0.15s;
-    }
-    .ch-size-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .ch-close-btn {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      color: var(--text-muted); font-size: 10px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    /* ═══════════════════════════════════════
-       TOAST
-    ═══════════════════════════════════════ */
-    #toast {
-      position: fixed; bottom: calc(env(safe-area-inset-bottom) + 30px);
-      left: 50%; transform: translateX(-50%) translateY(20px);
-      background: rgba(10,10,12,0.9); border: 1px solid var(--accent); border-radius: 12px;
-      padding: 11px 22px; font-size: 11px; font-family: 'Orbitron', monospace; color: var(--accent);
-      font-weight: 600; box-shadow: 0 0 20px var(--accent-glow); z-index: 400;
-      white-space: nowrap; display: flex; align-items: center; gap: 8px;
-      opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-    #toast.success { border-color: var(--success); color: var(--success); box-shadow: 0 0 20px var(--success-glow); }
-    #toast.error   { border-color: var(--danger);  color: var(--danger);  box-shadow: 0 0 20px rgba(239,68,68,0.4); }
-    .toast-icon { font-size: 13px; }
   </style>
 </head>
 <body>
 
-<!-- Particle Canvas -->
 <canvas id="particle-canvas"></canvas>
 
 <div class="bg-effects">
@@ -553,333 +180,46 @@
   <div class="ambient-glow bottom"></div>
 </div>
 
-<!-- Ticker -->
-<div class="live-ticker">
-  <div class="ticker-content">
-    [SYSTEM] Server: ONLINE &nbsp;&bull;&nbsp; Anti-Ban Bypass: ACTIVE &nbsp;&bull;&nbsp; Build v1.0.0: iOS 17 Optimized &nbsp;&bull;&nbsp; Network Latency: 12ms &nbsp;&bull;&nbsp; Security: AES-256 ENCRYPTED &nbsp;&bull;&nbsp; DNS Node: SECURE &nbsp;&bull;&nbsp; Touch Precision: 0ms LATENCY &nbsp;&bull;&nbsp; FPS Unlock: READY &nbsp;&bull;&nbsp; Recoil Engine: LOADED
-  </div>
-</div>
-
-<!-- ── SPLASH ── -->
-<div id="splash">
-  <div class="splash-logo-wrap">
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="splash-logo">
-      <img src="logo.png" alt="HeadSync" />
-    </div>
-  </div>
-  <div class="splash-title">HEADSYNC</div>
-  <div class="splash-sub">ADVANCED OPTIMIZER v1.0</div>
-  <div class="loader"><div class="loader-bar"></div></div>
-</div>
-
-<!-- ── LOGIN ── -->
-<div id="login-screen">
+<div class="modal-wrap">
   <div class="modal-box">
-    <div class="modal-lock-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
-    </div>
-    <div class="modal-title">SECURE GATEWAY</div>
-    <div class="modal-sub">Enter your license key<br/>to unlock full access</div>
-    <input type="password" id="key-input" placeholder="ENTER LICENSE KEY" onkeypress="handleKeypress(event)" autocomplete="off" />
-    <button class="boost-btn" style="margin:0;width:100%;display:block" id="btn-verify" onclick="checkKey()">
-      VERIFY ACCESS
-    </button>
-  </div>
-</div>
-
-<!-- ── MAIN APP ── -->
-<div id="app">
-
-  <header>
-    <div class="header-logo-wrap">
-      <div class="header-radar"></div>
-      <div class="header-radar"></div>
-      <div class="header-logo">
-        <img src="logo.png" alt="HeadSync" />
+    
+    <div class="success-icon-wrap">
+      <div class="success-radar"></div>
+      <div class="success-radar"></div>
+      <div class="success-radar"></div>
+      <div class="success-icon">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
       </div>
     </div>
-    <h1>HEADSYNC</h1>
-    <div class="header-sub">Advanced Performance Optimizer</div>
-    <div class="version-badge">
-      <span class="version-dot"></span>
-      v1.0.0 &nbsp;·&nbsp; Jun 2025
+
+    <div class="modal-title">CÀI ĐẶT THÀNH CÔNG</div>
+    <div class="modal-sub">
+      Bạn đã cấu hình thành công vào thiết bị.<br>
+      Hãy tham gia nhóm Zalo để nhận hỗ trợ!
     </div>
-  </header>
 
-  <!-- Device Scanner -->
-  <div class="device-scanner" id="scanner-box">
-    <div class="scanner-header"><span class="blink-dot"></span> SYSTEM SCAN IN PROGRESS...</div>
-    <div class="scanner-info">
-      <div class="scan-row"><span>Device</span>      <span class="scan-val" id="dev-name">Analyzing...</span></div>
-      <div class="scan-row"><span>OS</span>           <span class="scan-val" id="dev-os">Analyzing...</span></div>
-      <div class="scan-row"><span>Network IP</span>  <span class="scan-val" id="dev-ip">Analyzing...</span></div>
-      <div class="scan-row" id="key-expiry-row" style="display:none">
-        <span>Key Expires</span>
-        <span class="scan-tag warn" id="key-expiry-val"></span>
-      </div>
-      <div class="scan-row" id="key-type-row" style="display:none">
-        <span>License Type</span>
-        <span class="scan-tag good" id="key-type-val">ACTIVE</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Status Bar -->
-  <div class="status-bar">
-    <div class="status-item">
-      <div class="status-val ping" id="ping-val">--</div>
-      <div class="status-lbl">Ping (ms)</div>
-    </div>
-    <div class="status-divider"></div>
-    <div class="status-item">
-      <div class="status-val" id="fps-val">--</div>
-      <div class="status-lbl">FPS</div>
-    </div>
-    <div class="status-divider"></div>
-    <div class="status-item">
-      <div class="status-val" id="ram-val">--</div>
-      <div class="status-lbl">Free RAM</div>
-    </div>
-    <div class="status-divider"></div>
-    <div class="status-item">
-      <div class="status-val" id="dns-val" style="color:var(--success);font-size:11px">SECURE</div>
-      <div class="status-lbl">DNS</div>
-    </div>
-  </div>
-
-  <!-- Boost Result Card -->
-  <div id="boost-result">
-    <div class="result-title">✦ OPTIMIZATION RESULTS</div>
-    <div class="result-grid">
-      <div class="result-item">
-        <div class="result-before" id="res-fps-before">32</div>
-        <div class="result-after"  id="res-fps-after">--</div>
-        <div class="result-label">FPS</div>
-      </div>
-      <div class="result-item">
-        <div class="result-before" id="res-ping-before">48ms</div>
-        <div class="result-after"  id="res-ping-after">--</div>
-        <div class="result-label">Ping</div>
-      </div>
-      <div class="result-item">
-        <div class="result-before">1.2GB</div>
-        <div class="result-after" id="res-ram-after">--</div>
-        <div class="result-label">Free RAM</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Target Game -->
-  <div class="section">
-    <div class="section-title">Target Game</div>
-    <div class="game-selection">
-      <div class="game-option active" id="game-ff-normal" onclick="selectGame('normal')">
-        <div class="game-icon">FF</div>
-        <div class="game-name">Free Fire<span>Standard Edition</span></div>
-      </div>
-      <div class="game-option" id="game-ff-max" onclick="selectGame('max')">
-        <div class="game-icon max">MAX</div>
-        <div class="game-name">Free Fire<span>MAX Edition</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Advanced Settings -->
-  <div class="section">
-    <div class="section-title">Advanced Settings</div>
-    <div class="adv-panel">
-      <div class="adv-row">
-        <div class="adv-label">FPS Cap<span>Target frame rate</span></div>
-        <div class="pill-group" id="fps-group">
-          <button class="pill-btn" onclick="setFpsCap(30,this)">30</button>
-          <button class="pill-btn" onclick="setFpsCap(60,this)">60</button>
-          <button class="pill-btn active" onclick="setFpsCap(90,this)">90</button>
-          <button class="pill-btn" onclick="setFpsCap(120,this)">120</button>
-        </div>
-      </div>
-      <div class="adv-divider"></div>
-      <div class="adv-row">
-        <div class="adv-label">Graphics<span>Rendering quality</span></div>
-        <div class="pill-group" id="gfx-group">
-          <button class="pill-btn active" onclick="setGraphics('low',this)">LOW</button>
-          <button class="pill-btn" onclick="setGraphics('med',this)">MED</button>
-          <button class="pill-btn" onclick="setGraphics('high',this)">HIGH</button>
-        </div>
-      </div>
-      <div class="adv-divider"></div>
-      <div class="adv-row adv-toggle-row">
-        <div class="adv-label">Anti-Cheat Shield<span>Mask optimizer signature</span></div>
-        <div class="toggle" id="toggle-anticheat" onclick="toggleAntiCheat()"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Core Features -->
-  <div class="section">
-    <div class="section-title">Core Features</div>
-    <div class="cards">
-
-      <div class="card" id="card-boost" onclick="toggleFeature('boost')">
-        <div class="card-icon-feat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Memory Boost</div>
-          <div class="card-desc">Intercept memory buffers to maximize FPS output.</div>
-        </div>
-        <div class="toggle" id="toggle-boost"></div>
-      </div>
-
-      <div class="card" id="card-aim" onclick="toggleFeature('aim')">
-        <div class="card-icon-feat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Touch Calibration</div>
-          <div class="card-desc">Eliminate touch input delay — absolute zero latency.</div>
-        </div>
-        <div class="toggle" id="toggle-aim"></div>
-      </div>
-
-      <div class="card" id="card-vibrate" onclick="toggleFeature('vibrate')">
-        <div class="card-icon-feat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Recoil Reduction</div>
-          <div class="card-desc">Stabilize frame acceleration, reduce recoil by 80%.</div>
-        </div>
-        <div class="toggle" id="toggle-vibrate"></div>
-      </div>
-
-      <div class="card" id="card-reg" onclick="toggleFeature('reg')">
-        <div class="card-icon-feat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        </div>
-        <div class="card-body">
-          <div class="card-title">DNS Firewall Bypass</div>
-          <div class="card-desc">Reroute Garena servers, block ghost ping spikes.</div>
-        </div>
-        <div class="toggle" id="toggle-reg"></div>
-      </div>
-
-      <div class="card" id="card-crosshair" onclick="toggleFeature('crosshair')">
-        <div class="card-icon-feat">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="9"></circle>
-            <line x1="12" y1="1" x2="12" y2="5"></line>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="1" y1="12" x2="5" y2="12"></line>
-            <line x1="19" y1="12" x2="23" y2="12"></line>
-            <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+    <a href="https://zalo.me/g/ibyisiar5mlfgy5dwfh3" target="_blank" style="text-decoration:none;">
+      <button class="zalo-btn">
+        <div class="zalo-icon-box">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.5 11.5c0-4.694-4.253-8.5-9.5-8.5S2.5 6.806 2.5 11.5c0 4.14 3.32 7.6 7.82 8.35.32.05.65.13.91.31.25.17.43.43.51.72l.46 1.77c.05.19.19.34.38.41.19.06.4.04.57-.06l2.5-1.5c.2-.12.44-.16.67-.12 1.63.26 3.35.09 4.88-.49 2.59-1.02 4.3-3.41 4.3-6.19zM8.5 14h-3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h3c.28 0 .5.22.5.5s-.22.5-.5.5zm5 0h-2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h2c.28 0 .5.22.5.5s-.22.5-.5.5zm4 0h-2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h2c.28 0 .5.22.5.5s-.22.5-.5.5zM12 9c-.28 0-.5-.22-.5-.5V6.5c0-.28.22-.5.5-.5s.5.22.5.5v2c0 .28-.22.5-.5.5zm-4 0c-.28 0-.5-.22-.5-.5V6.5c0-.28.22-.5.5-.5s.5.22.5.5v2c0 .28-.22.5-.5.5zm8 0c-.28 0-.5-.22-.5-.5V6.5c0-.28.22-.5.5-.5s.5.22.5.5v2c0 .28-.22.5-.5.5z"/>
           </svg>
         </div>
-        <div class="card-body">
-          <div class="card-title">Tâm Ảo <span style="font-size:9px;color:var(--accent);font-family:'Orbitron',monospace;margin-left:4px">VIRTUAL AIM</span></div>
-          <div class="card-desc">Hiển thị tâm ngắm ảo giữa màn hình — kéo để di chuyển, tuỳ chỉnh màu &amp; kích thước.</div>
-        </div>
-        <div class="toggle" id="toggle-crosshair"></div>
-      </div>
+        THAM GIA NHÓM ZALO
+      </button>
+    </a>
 
-    </div>
-  </div>
-
-  <button class="boost-btn" id="btn-execute" onclick="startBoost(event)">
-    &#62; APPLY OPTIMIZATION
-  </button>
-  <div class="last-boost-info" id="last-boost-label">Last optimized: <span id="last-boost-time">never</span></div>
-
-  <!-- Community -->
-  <div class="community-section">
-    <div class="community-title">Join the Community</div>
-    <div class="community-links">
-      <a href="https://zalo.me/g/ibyisiar5mlfgy5dwfh3" target="_blank" class="comm-btn zalo">
-        <div class="comm-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><text y="17" font-size="14" font-weight="bold" font-family="Arial">Z</text></svg>
-        </div>
-        <div class="comm-label">Zalo Group<span>Support &amp; updates</span></div>
-      </a>
-      <a href="https://t.me/duskiosvip" target="_blank" class="comm-btn telegram">
-        <div class="comm-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247l-2.035 9.586c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.46 14.607 4.5 13.71c-.65-.204-.663-.65.136-.961l10.89-4.198c.543-.194 1.018.131.836.696z"/></svg>
-        </div>
-        <div class="comm-label">Telegram VIP<span>News &amp; new keys</span></div>
-      </a>
-    </div>
-  </div>
-
-  <footer>
-    <div class="footer-row">
-      <span>HEADSYNC &copy; 2025</span>
-      <span style="color:var(--border)">|</span>
-      <span>v1.0.0</span>
-      <span style="color:var(--border)">|</span>
-      <a href="https://t.me/duskiosvip" target="_blank">Report Issue</a>
-    </div>
-    <div style="font-size:9px;color:rgba(255,255,255,0.2)">UNAUTHORIZED COPYING OR DISTRIBUTION IS PROHIBITED</div>
-  </footer>
-
-</div><!-- /#app -->
-
-<!-- ── TERMINAL MODAL ── -->
-<div id="progress-modal">
-  <div class="terminal-box">
-    <div class="terminal-header">
-      <div class="terminal-dots">
-        <div class="terminal-dot red"></div>
-        <div class="terminal-dot yellow"></div>
-        <div class="terminal-dot green"></div>
-      </div>
-      <span style="font-size:9px">root@headsync:~/optimizer</span>
-      <span id="term-status">RUNNING</span>
-    </div>
-    <div class="terminal-body" id="term-log"></div>
-    <div class="terminal-progress"><div class="terminal-fill" id="term-fill"></div></div>
   </div>
 </div>
 
-
-<!-- ── VIRTUAL CROSSHAIR OVERLAY ── -->
-<div id="crosshair-overlay">
-  <div class="crosshair-wrap" id="crosshair-wrap">
-    <div class="ch-circle" id="ch-circle"></div>
-    <div class="ch-line ch-left"></div>
-    <div class="ch-line ch-right"></div>
-    <div class="ch-line ch-top"></div>
-    <div class="ch-line ch-bot"></div>
-    <div class="ch-dot"></div>
-  </div>
-</div>
-<div id="crosshair-drag-handle"></div>
-<div id="ch-settings-bar">
-  <div class="ch-color-btn selected" style="background:#ef4444" data-color="#ef4444" onclick="setCrossHairColor(this)"></div>
-  <div class="ch-color-btn" style="background:#22c55e" data-color="#22c55e" onclick="setCrossHairColor(this)"></div>
-  <div class="ch-color-btn" style="background:#fff" data-color="#fff" onclick="setCrossHairColor(this)"></div>
-  <div class="ch-color-btn" style="background:#f59e0b" data-color="#f59e0b" onclick="setCrossHairColor(this)"></div>
-  <div class="ch-color-btn" style="background:#a78bfa" data-color="#a78bfa" onclick="setCrossHairColor(this)"></div>
-  <div class="ch-sep"></div>
-  <button class="ch-size-btn active" onclick="setCrossHairSize('sm',this)">S</button>
-  <button class="ch-size-btn" onclick="setCrossHairSize('md',this)">M</button>
-  <button class="ch-size-btn" onclick="setCrossHairSize('lg',this)">L</button>
-  <div class="ch-sep"></div>
-  <div class="ch-close-btn" onclick="closeCrossHairSettings()">✕</div>
-</div>
-
-<!-- ── TOAST ── -->
-<div id="toast">
-  <span class="toast-icon" id="toast-icon">◉</span>
-  <span id="toast-msg"></span>
-</div>
+<footer>HEADSYNC &copy; 2025 | SECURE SYSTEM</footer>
 
 <script>
 /* ═══════════════════════════════════════════
-   PARTICLE SYSTEM
+   PARTICLE SYSTEM (Màu xanh lá cho đồng bộ với Success)
 ═══════════════════════════════════════════ */
 (function initParticles() {
   const canvas = document.getElementById('particle-canvas');
@@ -906,7 +246,6 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    // Draw connections
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
@@ -914,7 +253,7 @@
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist < 120) {
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(239,68,68,${0.12 * (1 - dist/120)})`;
+          ctx.strokeStyle = `rgba(16,185,129,${0.15 * (1 - dist/120)})`;
           ctx.lineWidth = 0.5;
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
@@ -922,13 +261,11 @@
         }
       }
     }
-    // Draw dots
     particles.forEach(p => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(239,68,68,0.5)';
+      ctx.fillStyle = 'rgba(16,185,129,0.5)';
       ctx.fill();
-      // Move
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0 || p.x > W) p.vx *= -1;
       if (p.y < 0 || p.y > H) p.vy *= -1;
@@ -937,609 +274,6 @@
   }
   draw();
 })();
-
-/* ═══════════════════════════════════════════
-   AUDIO
-═══════════════════════════════════════════ */
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
-function initAudio() {
-  if (!audioCtx) audioCtx = new AudioCtx();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-}
-function playBeep(freq = 800, type = 'sine', duration = 0.05, vol = 0.05) {
-  if (!audioCtx) return;
-  const osc  = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type; osc.frequency.value = freq;
-  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + duration);
-}
-
-/* ═══════════════════════════════════════════
-   CONFIG & STATE
-═══════════════════════════════════════════ */
-const SUPABASE_URL = "https://rorciwilwxzqakdflkes.supabase.co";
-const SUPABASE_KEY = "sb_publishable_bpEASGGGcJa74DKjzH27Ig_ipM9HEhB";
-const HEADERS = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": "Bearer " + SUPABASE_KEY,
-  "Content-Type": "application/json",
-  "Prefer": "return=representation"
-};
-
-let HWID = "UNKNOWN_DEVICE";
-FingerprintJS.load().then(fp => fp.get()).then(r => { HWID = r.visitorId; });
-
-const states = { boost: false, aim: false, vibrate: false, reg: false, crosshair: false };
-let selectedGame    = 'normal';
-let selectedFps     = 90;
-let selectedGfx     = 'low';
-let antiCheatOn     = false;
-let autoLaunchOn    = false;
-let baselinePing    = 48;
-
-// Crosshair state
-let chColor  = localStorage.getItem('hs_ch_color') || '#ef4444';
-let chSize   = localStorage.getItem('hs_ch_size')  || 'sm';
-let chX      = parseFloat(localStorage.getItem('hs_ch_x') || 50);  // % from left
-let chY      = parseFloat(localStorage.getItem('hs_ch_y') || 50);  // % from top
-
-// Restore last boost time
-const lastBoostRaw = localStorage.getItem('hs_last_boost');
-if (lastBoostRaw) {
-  document.getElementById('last-boost-time').textContent = timeAgo(new Date(lastBoostRaw));
-}
-
-/* ═══════════════════════════════════════════
-   SPLASH → LOGIN
-═══════════════════════════════════════════ */
-setTimeout(() => {
-  document.getElementById('splash').classList.add('hide');
-  setTimeout(() => {
-    document.getElementById('login-screen').classList.add('show');
-    document.getElementById('key-input').focus();
-  }, 800);
-}, 2500);
-
-/* ═══════════════════════════════════════════
-   KEY VERIFICATION
-═══════════════════════════════════════════ */
-function handleKeypress(event) {
-  initAudio();
-  playBeep(1000, 'square', 0.02, 0.02);
-  if (event.key === "Enter") checkKey();
-}
-
-async function checkKey() {
-  initAudio();
-  const input = document.getElementById('key-input');
-  const inputKey = input.value.trim();
-  if (!inputKey) return;
-
-  const btn = document.getElementById('btn-verify');
-  const old = btn.textContent;
-  btn.textContent = "VERIFYING...";
-
-  try {
-    const res  = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}&select=*`, { headers: HEADERS });
-    const data = await res.json();
-
-    if (data.length === 0) throw new Error("License key not found.");
-    const kd = data[0];
-    if (!kd.is_active) throw new Error("Key has been deactivated.");
-
-    let reg = kd.registered_hwids || [];
-    if (reg.includes(HWID)) {
-      if (kd.expires_at && Date.now() > new Date(kd.expires_at).getTime())
-        throw new Error("Your license key has expired.");
-    } else {
-      if (reg.length >= kd.max_devices)
-        throw new Error(`Device limit reached (max ${kd.max_devices}).`);
-      reg.push(HWID);
-      let upd = { registered_hwids: reg };
-      if (reg.length === 1) {
-        const ms = kd.duration_days * 86400000;
-        upd.expires_at = new Date(Date.now() + ms).toISOString();
-      }
-      await fetch(`${SUPABASE_URL}/rest/v1/keys?key_string=eq.${inputKey}`, {
-        method: "PATCH", headers: HEADERS, body: JSON.stringify(upd)
-      });
-      kd.expires_at = upd.expires_at;
-    }
-
-    playBeep(1200, 'sine', 0.1, 0.1);
-    playBeep(1600, 'sine', 0.15, 0.1);
-    document.getElementById('login-screen').classList.remove('show');
-    showToast('ACCESS GRANTED', 'success');
-
-    if (kd.expires_at) {
-      const exp = new Date(kd.expires_at);
-      document.getElementById('key-expiry-row').style.display = 'flex';
-      document.getElementById('key-expiry-val').textContent = exp.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-    }
-    document.getElementById('key-type-row').style.display = 'flex';
-    document.getElementById('key-type-val').textContent = kd.duration_days + '-DAY LICENSE';
-
-    setTimeout(() => {
-      document.getElementById('app').classList.add('show');
-      initDeviceScanner();
-      initStats();
-    }, 500);
-
-  } catch(err) {
-    playBeep(300, 'sawtooth', 0.3, 0.1);
-    input.classList.add('error');
-    showToast(err.message || 'System error.', 'error');
-    setTimeout(() => input.classList.remove('error'), 800);
-  } finally {
-    btn.textContent = old;
-  }
-}
-
-/* ═══════════════════════════════════════════
-   DEVICE SCANNER & STATS
-═══════════════════════════════════════════ */
-function initDeviceScanner() {
-  setTimeout(() => {
-    const ua = navigator.userAgent;
-    let dev = "Desktop Client", os = navigator.platform;
-    if      (/iPhone|iPad|iPod/.test(ua)) { dev = "Apple iOS Device"; os = "iOS " + (ua.match(/OS (\d+_\d+)/)||['','?'])[1].replace('_','.'); }
-    else if (/Android/.test(ua))          { dev = "Android Device";   os = "Android " + (ua.match(/Android (\d+\.?\d*)/)||['','?'])[1]; }
-
-    const ip = `${Math.floor(Math.random()*150+50)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.x`;
-    document.getElementById('dev-name').textContent = dev;
-    document.getElementById('dev-os').textContent   = os;
-    document.getElementById('dev-ip').textContent   = ip;
-
-    const hdr = document.querySelector('.scanner-header');
-    hdr.innerHTML = '<span class="blink-dot" style="background:var(--success)"></span> CONNECTED TO DEVICE';
-    hdr.style.color = 'var(--success)';
-    document.getElementById('scanner-box').classList.add('connected');
-    playBeep(2000, 'sine', 0.05, 0.05);
-  }, 1500);
-}
-
-function initStats() {
-  baselinePing = Math.floor(Math.random() * 30 + 28);
-  setTimeout(() => {
-    document.getElementById('ping-val').textContent = baselinePing;
-    document.getElementById('ram-val').textContent  = Math.floor(Math.random()*300+1400)+'M';
-    document.getElementById('fps-val').textContent  = Math.floor(Math.random()*10+22);
-  }, 400);
-  setInterval(() => {
-    if (!document.getElementById('boost-result').classList.contains('show')) {
-      document.getElementById('ping-val').textContent = Math.floor(Math.random()*12 + baselinePing - 5);
-    }
-  }, 3000);
-}
-
-/* ═══════════════════════════════════════════
-   SETTINGS
-═══════════════════════════════════════════ */
-function setFpsCap(fps, btn) {
-  initAudio(); playBeep(700, 'sine', 0.04, 0.03);
-  selectedFps = fps;
-  document.querySelectorAll('#fps-group .pill-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  localStorage.setItem('hs_fps', fps);
-}
-
-function setGraphics(level, btn) {
-  initAudio(); playBeep(750, 'sine', 0.04, 0.03);
-  selectedGfx = level;
-  document.querySelectorAll('#gfx-group .pill-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  localStorage.setItem('hs_gfx', level);
-}
-
-function toggleAntiCheat() {
-  initAudio();
-  antiCheatOn = !antiCheatOn;
-  const t = document.getElementById('toggle-anticheat');
-  t.classList.toggle('on', antiCheatOn);
-  playBeep(antiCheatOn ? 900 : 600, 'square', 0.05, 0.03);
-  if (navigator.vibrate) navigator.vibrate(antiCheatOn ? 50 : 30);
-  showToast(antiCheatOn ? 'ANTI-CHEAT SHIELD: ON' : 'ANTI-CHEAT SHIELD: OFF', antiCheatOn ? 'success' : 'info');
-}
-
-function toggleAutoLaunch() {
-  initAudio();
-  autoLaunchOn = !autoLaunchOn;
-  const t = document.getElementById('toggle-autolaunch');
-  t.classList.toggle('on', autoLaunchOn);
-  playBeep(autoLaunchOn ? 900 : 600, 'square', 0.05, 0.03);
-  if (navigator.vibrate) navigator.vibrate(autoLaunchOn ? 50 : 30);
-  showToast(autoLaunchOn ? 'AUTO LAUNCH: BẬT' : 'AUTO LAUNCH: TẮT', autoLaunchOn ? 'success' : 'info');
-}
-
-function selectGame(game) {
-  initAudio(); playBeep(800, 'square', 0.05, 0.03);
-  selectedGame = game;
-  document.getElementById('game-ff-normal').classList.toggle('active', game === 'normal');
-  document.getElementById('game-ff-max').classList.toggle('active', game === 'max');
-}
-
-/* ═══════════════════════════════════════════
-   FEATURE TOGGLES
-═══════════════════════════════════════════ */
-function toggleFeature(key) {
-  initAudio();
-  states[key] = !states[key];
-  const on = states[key];
-  document.getElementById('toggle-' + key).classList.toggle('on', on);
-  document.getElementById('card-' + key).classList.toggle('enabled', on);
-  playBeep(on ? 1000 : 700, 'square', 0.05, 0.03);
-  if (navigator.vibrate) navigator.vibrate(on ? 50 : 25);
-
-  // Handle crosshair special case
-  if (key === 'crosshair') {
-    if (on) {
-      activateCrossHair();
-      showToast('TÂM ẢO: BẬT — Kéo để di chuyển', 'success');
-    } else {
-      deactivateCrossHair();
-      showToast('TÂM ẢO: TẮT', 'info');
-    }
-    return;
-  }
-
-  showToast(
-    on ? key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': ENABLED'
-       : key.replace('boost','MEMORY').replace('aim','TOUCH').replace('vibrate','RECOIL').replace('reg','DNS') + ': DISABLED',
-    on ? 'success' : 'info'
-  );
-}
-
-/* ═══════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════ */
-function showToast(msg, type = 'info') {
-  const t    = document.getElementById('toast');
-  const icon = document.getElementById('toast-icon');
-  const txt  = document.getElementById('toast-msg');
-  const icons = { success: '✓', error: '✗', info: '◉' };
-  icon.textContent = icons[type] || '◉';
-  txt.textContent  = msg;
-  t.className = 'show ' + type;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.className = ''; }, 2500);
-}
-
-/* ═══════════════════════════════════════════
-   RIPPLE EFFECT
-═══════════════════════════════════════════ */
-function createRipple(btn, event) {
-  const rect = btn.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  const x = event.clientX - rect.left - size / 2;
-  const y = event.clientY - rect.top  - size / 2;
-  const ripple = document.createElement('span');
-  ripple.classList.add('ripple');
-  ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
-  btn.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 600);
-}
-
-/* ═══════════════════════════════════════════
-   TERMINAL & BOOST
-═══════════════════════════════════════════ */
-const terminalLogs = [
-  "root@headsync:~# ./optimizer.sh --target {GAME_NAME}",
-  "[+] Initializing HeadSync engine v1.0...",
-  "[+] Target identified: {GAME_NAME}",
-  "[+] Bypassing security layer...",
-  "    -> Auth signature neutralized.",
-  "[+] Allocating memory buffers...",
-  "    -> RAM freed: 450MB.",
-  "    -> Buffer pool: 2048KB ready.",
-  "[!] Injecting touch precision module...",
-  "    -> Input latency set to 0ms.",
-  "[!] Applying recoil correction algorithm...",
-  "    -> Recoil coefficients overridden.",
-  "[+] Setting FPS target: {FPS_CAP}fps...",
-  "    -> Graphics mode: {GFX_MODE}",
-  "[+] Patching network stack...",
-  "    -> DNS rerouted via private relay.",
-  "    -> Ping stabilized at 8ms.",
-  "root@headsync:~# verify --all",
-  "[OK] All modules loaded & active.",
-  "Optimization complete. Enjoy your game.",
-];
-
-function startBoost(event) {
-  initAudio();
-  createRipple(document.getElementById('btn-execute'), event);
-  playBeep(500, 'sawtooth', 0.2, 0.1);
-
-  const btn = document.getElementById('btn-execute');
-  btn.classList.add('active');
-  btn.textContent = '> PROCESSING...';
-
-  const modal    = document.getElementById('progress-modal');
-  const termLog  = document.getElementById('term-log');
-  const termFill = document.getElementById('term-fill');
-  termLog.innerHTML = '';
-  termFill.style.width = '0%';
-  modal.classList.add('show');
-
-  let idx = 0;
-  const gameName = selectedGame === 'normal' ? 'com.dts.freefireth' : 'com.dts.freefiremax';
-
-  const interval = setInterval(() => {
-    if (idx < terminalLogs.length) {
-      let line = terminalLogs[idx]
-        .replace(/{GAME_NAME}/g, gameName)
-        .replace('{FPS_CAP}',  selectedFps)
-        .replace('{GFX_MODE}', selectedGfx.toUpperCase());
-      termLog.innerHTML += `<div>${line}</div>`;
-      termLog.scrollTop  = termLog.scrollHeight;
-      if      (line.includes('root@'))  playBeep(400,  'square',   0.1,  0.05);
-      else if (line.includes('[!]'))    playBeep(900,  'sawtooth', 0.05, 0.05);
-      else if (line.includes('[OK]'))   playBeep(1600, 'sine',     0.08, 0.08);
-      else                              playBeep(1200, 'sine',     0.02, 0.02);
-      termFill.style.width = ((idx + 1) / terminalLogs.length * 100) + '%';
-      idx++;
-    } else {
-      clearInterval(interval);
-      playBeep(1500, 'sine', 0.1,  0.1);
-      playBeep(2000, 'sine', 0.2,  0.1);
-      if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-      document.getElementById('term-status').textContent = 'DONE';
-      document.getElementById('term-status').style.color = 'var(--term-green)';
-
-      setTimeout(() => {
-        modal.classList.remove('show');
-        btn.classList.remove('active');
-        btn.textContent = '> APPLY OPTIMIZATION';
-        document.getElementById('term-status').textContent = 'RUNNING';
-        document.getElementById('term-status').style.color = 'var(--text-muted)';
-        onBoostComplete();
-        // Auto-launch game always
-        setTimeout(() => launchGame(), 1000);
-      }, 1200);
-    }
-  }, 350);
-}
-
-/* ═══════════════════════════════════════════
-   POST-BOOST ANIMATION
-═══════════════════════════════════════════ */
-function onBoostComplete() {
-  const pingBefore = parseInt(document.getElementById('ping-val').textContent) || baselinePing;
-  const pingAfter  = Math.floor(Math.random() * 5 + 7); // 7-12ms
-  const fpsBefore  = parseInt(document.getElementById('fps-val').textContent)  || 28;
-  const fpsAfter   = selectedFps;
-  const ramAfter   = Math.floor(Math.random() * 300 + 1800) + 'M';
-
-  // Animate status bar
-  animateCounter(document.getElementById('ping-val'), pingBefore, pingAfter, 800, 'ms', true);
-  animateCounter(document.getElementById('fps-val'),  fpsBefore,  fpsAfter,  1000, '', false);
-
-  // Result card
-  document.getElementById('res-fps-before').textContent  = fpsBefore;
-  document.getElementById('res-fps-after').textContent   = fpsAfter;
-  document.getElementById('res-ping-before').textContent = pingBefore + 'ms';
-  document.getElementById('res-ping-after').textContent  = pingAfter  + 'ms';
-  document.getElementById('res-ram-after').textContent   = ramAfter;
-  document.getElementById('boost-result').classList.add('show');
-
-  // Pulse enabled feature cards
-  Object.keys(states).forEach(k => {
-    if (states[k]) {
-      const card = document.getElementById('card-' + k);
-      card.classList.remove('pulse-green');
-      void card.offsetWidth; // reflow
-      card.classList.add('pulse-green');
-    }
-  });
-
-  // Update RAM
-  setTimeout(() => {
-    document.getElementById('ram-val').textContent = ramAfter;
-    document.getElementById('ram-val').classList.add('boosted');
-    setTimeout(() => document.getElementById('ram-val').classList.remove('boosted'), 800);
-  }, 600);
-
-  // Save & update last boost time
-  const now = new Date();
-  localStorage.setItem('hs_last_boost', now.toISOString());
-  document.getElementById('last-boost-time').textContent = 'just now';
-
-  showToast('OPTIMIZATION APPLIED!', 'success');
-}
-
-function animateCounter(el, from, to, duration, suffix, down) {
-  const start = performance.now();
-  function step(now) {
-    const t = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
-    const val  = Math.round(from + (to - from) * ease);
-    el.textContent = val + suffix;
-    if (t < 1) requestAnimationFrame(step);
-    else {
-      el.textContent = to + suffix;
-      el.classList.add('boosted');
-      setTimeout(() => el.classList.remove('boosted'), 800);
-    }
-  }
-  requestAnimationFrame(step);
-}
-
-/* ═══════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════ */
-function timeAgo(date) {
-  const diff = (Date.now() - date.getTime()) / 1000;
-  if (diff < 60)   return 'just now';
-  if (diff < 3600) return Math.floor(diff / 60)   + 'm ago';
-  if (diff < 86400)return Math.floor(diff / 3600)  + 'h ago';
-  return Math.floor(diff / 86400) + 'd ago';
-}
-
-// Restore saved settings
-(function restoreSettings() {
-  const savedFps = localStorage.getItem('hs_fps');
-  if (savedFps) {
-    const btn = document.querySelector(`#fps-group .pill-btn[onclick*="${savedFps}"]`);
-    if (btn) { document.querySelectorAll('#fps-group .pill-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedFps = +savedFps; }
-  }
-  const savedGfx = localStorage.getItem('hs_gfx');
-  if (savedGfx) {
-    const btn = document.querySelector(`#gfx-group .pill-btn[onclick*="${savedGfx}"]`);
-    if (btn) { document.querySelectorAll('#gfx-group .pill-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedGfx = savedGfx; }
-  }
-})();
-
-/* ═══════════════════════════════════════════
-   AUTO LAUNCH GAME
-═══════════════════════════════════════════ */
-function launchGame() {
-  const deepLinks = {
-    normal: 'freefireth://',
-    max:    'freefiremax://'
-  };
-  const link = deepLinks[selectedGame] || deepLinks['normal'];
-  const gameName = selectedGame === 'normal' ? 'Free Fire' : 'Free Fire MAX';
-  showToast('Đang mở ' + gameName + '...', 'success');
-
-  // Attempt to open via deep link
-  const t0 = Date.now();
-  window.location.href = link;
-
-  // After 2s, if page is still visible the app likely didn't open
-  setTimeout(() => {
-    if (!document.hidden && (Date.now() - t0) < 3000) {
-      showToast(gameName + ' chưa được cài đặt!', 'error');
-    }
-  }, 2000);
-}
-
-/* ═══════════════════════════════════════════
-   VIRTUAL CROSSHAIR
-═══════════════════════════════════════════ */
-(function initCrossHairFromStorage() {
-  if (localStorage.getItem('hs_crosshair') === '1') {
-    // Don't auto-activate on load — user must toggle
-  }
-  applyChColor(chColor);
-  applyChSize(chSize);
-  positionCrossHair();
-})();
-
-function positionCrossHair() {
-  const wrap   = document.getElementById('crosshair-wrap');
-  const handle = document.getElementById('crosshair-drag-handle');
-  const x = chX; const y = chY;
-  wrap.style.position   = 'fixed';
-  wrap.style.top        = y + '%';
-  wrap.style.left       = x + '%';
-  wrap.style.transform  = 'translate(-50%, -50%)';
-  handle.style.top      = y + '%';
-  handle.style.left     = x + '%';
-  handle.style.transform = 'translate(-50%, -50%)';
-}
-
-function applyChColor(color) {
-  document.querySelectorAll('.ch-line, .ch-dot').forEach(el => {
-    el.style.background = color;
-  });
-  const circle = document.getElementById('ch-circle');
-  if (circle) circle.style.borderColor = color + '88';
-}
-
-function applyChSize(size) {
-  const wrap = document.getElementById('crosshair-wrap');
-  const scales = { sm: 1, md: 1.5, lg: 2 };
-  const scale  = scales[size] || 1;
-  wrap.style.transform = `translate(-50%, -50%) scale(${scale})`;
-}
-
-function activateCrossHair() {
-  const overlay = document.getElementById('crosshair-overlay');
-  const handle  = document.getElementById('crosshair-drag-handle');
-  const bar     = document.getElementById('ch-settings-bar');
-  overlay.classList.add('active');
-  handle.classList.add('active');
-  bar.classList.add('active');
-  positionCrossHair();
-  applyChColor(chColor);
-  applyChSize(chSize);
-  localStorage.setItem('hs_crosshair', '1');
-  initCrossHairDrag();
-}
-
-function deactivateCrossHair() {
-  document.getElementById('crosshair-overlay').classList.remove('active');
-  document.getElementById('crosshair-drag-handle').classList.remove('active');
-  document.getElementById('ch-settings-bar').classList.remove('active');
-  localStorage.setItem('hs_crosshair', '0');
-}
-
-function closeCrossHairSettings() {
-  document.getElementById('ch-settings-bar').classList.remove('active');
-}
-
-function setCrossHairColor(btn) {
-  chColor = btn.dataset.color;
-  document.querySelectorAll('.ch-color-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  applyChColor(chColor);
-  localStorage.setItem('hs_ch_color', chColor);
-  playBeep(900, 'sine', 0.03, 0.02);
-}
-
-function setCrossHairSize(size, btn) {
-  chSize = size;
-  document.querySelectorAll('.ch-size-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  applyChSize(chSize);
-  localStorage.setItem('hs_ch_size', chSize);
-  playBeep(900, 'sine', 0.03, 0.02);
-}
-
-function initCrossHairDrag() {
-  const handle = document.getElementById('crosshair-drag-handle');
-  let dragging = false, startX, startY, startChX, startChY;
-
-  function onStart(e) {
-    dragging = true;
-    const pt = e.touches ? e.touches[0] : e;
-    startX = pt.clientX; startY = pt.clientY;
-    startChX = chX; startChY = chY;
-    e.preventDefault();
-  }
-  function onMove(e) {
-    if (!dragging) return;
-    const pt = e.touches ? e.touches[0] : e;
-    const dx = ((pt.clientX - startX) / window.innerWidth)  * 100;
-    const dy = ((pt.clientY - startY) / window.innerHeight) * 100;
-    chX = Math.min(90, Math.max(10, startChX + dx));
-    chY = Math.min(90, Math.max(10, startChY + dy));
-    positionCrossHair();
-    e.preventDefault();
-  }
-  function onEnd() {
-    if (!dragging) return;
-    dragging = false;
-    localStorage.setItem('hs_ch_x', chX);
-    localStorage.setItem('hs_ch_y', chY);
-    // Show settings bar when drag ends
-    document.getElementById('ch-settings-bar').classList.add('active');
-  }
-
-  // Remove old listeners by cloning node
-  const newHandle = handle.cloneNode(true);
-  handle.parentNode.replaceChild(newHandle, handle);
-  newHandle.addEventListener('touchstart', onStart, { passive: false });
-  newHandle.addEventListener('touchmove',  onMove,  { passive: false });
-  newHandle.addEventListener('touchend',   onEnd);
-  newHandle.addEventListener('mousedown',  onStart);
-  document.addEventListener('mousemove',   onMove);
-  document.addEventListener('mouseup',     onEnd);
-}
 </script>
 </body>
 </html>
